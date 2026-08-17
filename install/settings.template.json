@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Read({{VAULT_ROOT}}/**)",
+      "Glob({{VAULT_ROOT}}/**)",
+      "Grep({{VAULT_ROOT}}/**)",
+      "Write({{AI_WIKI_DIR}}/**)",
+      "Edit({{AI_WIKI_DIR}}/**)"
+    ],
+    "deny": [
+      "Write({{VAULT_ROOT}}/.obsidian/**)",
+      "Edit({{VAULT_ROOT}}/.obsidian/**)",
+      "Write({{VAULT_ROOT}}/.trash/**)",
+      "Edit({{VAULT_ROOT}}/.trash/**)",
+      "Write({{VAULT_ROOT}}/.git/**)",
+      "Edit({{VAULT_ROOT}}/.git/**)"
+    ]
+  }
+}

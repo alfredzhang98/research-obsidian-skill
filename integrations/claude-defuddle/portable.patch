@@ -1,0 +1,40 @@
+diff --git a/defuddle.py b/defuddle.py
+index ec33413..3319fe9 100644
+--- a/defuddle.py
++++ b/defuddle.py
+@@ -16,19 +16,28 @@ import io
+ if isinstance(sys.stdout, io.TextIOWrapper):
+     sys.stdout.reconfigure(encoding='utf-8')
+
+-# Keys are read from ~/.claude/CLAUDE.md — add a line like: **ServiceName**: `your-key`
+-try:
+-    _claude_md = open(os.path.expanduser('~/.claude/CLAUDE.md')).read()
+-    _apikey = lambda s: (m.group(1) if (m := re.search(rf'\*\*{s}\*\*:\s*`([^`]+)`', _claude_md, re.IGNORECASE)) else '')
+-except Exception:
+-    _apikey = lambda s: ''
++# Keys are read from environment variables (GEMINI_API_KEY, OPENAI_API_KEY,
++# DATALAB_API_KEY) with a legacy fallback to ~/.claude/CLAUDE.md lines like:
++# **ServiceName**: `your-key`
++def _apikey(name: str) -> str:
++    if not name:
++        return ''
++    env = os.environ.get(name.upper() + '_API_KEY', '')
++    if env:
++        return env
++    try:
++        _claude_md = open(os.path.expanduser('~/.claude/CLAUDE.md')).read()
++        _m = re.search(rf'\*\*{name}\*\*:\s*`([^`]+)`', _claude_md, re.IGNORECASE)
++        return _m.group(1) if _m else ''
++    except Exception:
++        return ''
+
+ # ╔══════════════════════════════════════════════════════════════════════════════╗
+ # ║                            USER SETTINGS                                     ║
+ # ╠══════════════════════════════════════════════════════════════════════════════╣
+ # ║  Vault path — where notes are saved. Leave '' to read from projects.yaml.    ║
+ # ║  Example: '/Users/you/Documents/Obsidian'                                    ║
+-VAULT_PATH = ''
++VAULT_PATH = os.environ.get('OBSIDIAN_VAULT_PATH', '')
+ # ║                                                                              ║
+ # ║  Source feature flags — set False to treat that type as a generic article    ║
+ ENABLE_YOUTUBE  = True

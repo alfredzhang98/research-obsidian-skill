@@ -1,0 +1,41 @@
+# ── Personal data / secrets — never commit ──────────────────────────────
+# The repo ships a placeholder profile at rules/my.md; the *filled-in* copy
+# the installer writes into a vault lives at .claude/rules/my.md and must
+# never be committed.
+.claude/rules/my.md
+
+# Any personal or credential-bearing notes that leak in.
+**/credentials*
+**/*.env
+**/.env
+**/secrets*
+**/token*
+**/api_key*
+**/apikey*
+
+# ── Vault content the repo must never carry ─────────────────────────────
+# Actual papers, extracted figures, and the user's hand-written notes.
+*.pdf
+0ai_wiki/
+_attachments/
+Projects/
+Research/
+Resources/
+Daily Notes/
+Inbox/
+Archive/
+Templates/   # note: the repo's own templates live under /templates, not /Templates
+
+# ── Obsidian internal state ─────────────────────────────────────────────
+.obsidian/
+.trash/
+
+# ── OS / editor noise ───────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.code-workspace
+
+# ── Python ──────────────────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
