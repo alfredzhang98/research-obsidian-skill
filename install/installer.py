@@ -5,8 +5,9 @@ The canonical, cross-platform installer. The shell and PowerShell entry points
 (``install.sh`` / ``install.ps1``) are thin wrappers around this module.
 
 Steps:
-  1. Copy owned skills (ai-wiki, paper-figures, paper-search, claude-defuddle)
-     into ``~/.claude/skills/``.
+  1. Copy owned skills: ``ai-wiki`` into ``<vault>/.claude/skills/`` (vault-scoped)
+     and ``paper-figures`` / ``paper-search`` / ``claude-defuddle`` into
+     ``~/.claude/skills/`` (user-scoped).
   2. Clone ``claude-defuddle`` at a pinned revision and apply the portability patch.
   3. Clone ``paper-search-mcp`` at a pinned revision.
   4. Create (or reuse) a Python environment with PyMuPDF + Pillow for paper-figures.
@@ -41,7 +42,10 @@ PLACEHOLDERS = (
     "{{DEFUDDLE_SCRIPT}}",
 )
 
-OWNED_SKILLS = ("ai-wiki", "paper-figures", "paper-search", "claude-defuddle")
+# ai-wiki is vault-scoped (CLAUDE.md points at <vault>/.claude/skills/ai-wiki);
+# the other three are user-scoped under ~/.claude/skills.
+USER_SKILLS = ("paper-figures", "paper-search", "claude-defuddle")
+VAULT_SKILLS = ("ai-wiki",)
 
 AI_WIKI_SUBDIRS = (
     "Templates",
@@ -164,11 +168,17 @@ def main() -> int:
 
     # 1. Copy owned skills --------------------------------------------------
     skills_home.mkdir(parents=True, exist_ok=True)
-    for skill in OWNED_SKILLS:
+    for skill in USER_SKILLS:
         dest = skills_home / skill
         shutil.rmtree(dest, ignore_errors=True)
         shutil.copytree(repo_dir / "skills" / skill, dest)
-        log(f"installed skill: {skill}")
+        log(f"installed skill (user): {skill}")
+    vault_skills_dir = vault_path / ".claude" / "skills"
+    for skill in VAULT_SKILLS:
+        dest = vault_skills_dir / skill
+        shutil.rmtree(dest, ignore_errors=True)
+        shutil.copytree(repo_dir / "skills" / skill, dest)
+        log(f"installed skill (vault): {skill}")
 
     # 2. claude-defuddle (pinned + patched) ---------------------------------
     # The wrapper skill lives at skills/claude-defuddle/SKILL.md; the actual

@@ -1,5 +1,5 @@
 ---
-name: claude-defuddle
+name: defuddle
 description: Extract clean Markdown from web pages and supported media URLs with the installed Defuddle integration, optionally saving a structured note and local images into an Obsidian vault. Use when the user provides an article, documentation page, repository page, YouTube URL, Apple Podcasts URL, DOI, or arXiv URL to read, summarize, or archive.
 ---
 

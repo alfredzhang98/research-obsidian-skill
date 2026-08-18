@@ -26,7 +26,7 @@ You can also call it explicitly: `/ai-wiki`.
 | `ai-wiki` | auto-triggers on filing requests; owns routing + note specs |
 | `paper-figures` | runs as part of a paper note; extracts `figN.png` from the PDF |
 | `paper-search` | "search for X", "find papers on Y" |
-| `claude-defuddle` | auto-triggers on any non-paper URL you want read or saved |
+| `defuddle` | auto-triggers on any non-paper URL you want read or saved |
 
 ## 3. Reading a paper — the full flow
 

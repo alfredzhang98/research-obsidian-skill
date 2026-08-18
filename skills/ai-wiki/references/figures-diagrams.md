@@ -66,4 +66,4 @@ If an Obsidian JSON Canvas tool is available, use it for spatial annotation or w
 - `<AI_WIKI>/_attachments/paper-figures/<paper-slug>/` — assets used by one paper note.
 - `<AI_WIKI>/_attachments/screenshots/` — screenshots and ad hoc visual captures.
 - `<AI_WIKI>/Research/figures/` — curated visuals reused across multiple notes.
-- `claude-defuddle` saves downloaded web images beside its note in an `img/` directory; preserve that local relationship.
+- `defuddle` saves downloaded web images beside its note in an `img/` directory; preserve that local relationship.

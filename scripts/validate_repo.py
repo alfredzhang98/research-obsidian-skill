@@ -42,7 +42,14 @@ REQUIRED_PATHS = (
     "templates/topic-plan.md",
 )
 
-SKILL_NAMES = ("ai-wiki", "claude-defuddle", "paper-figures", "paper-search")
+# skill name -> directory under skills/. The defuddle skill is named "defuddle"
+# but lives in the "claude-defuddle" directory, matching the upstream repo.
+SKILLS = {
+    "ai-wiki": "ai-wiki",
+    "defuddle": "claude-defuddle",
+    "paper-figures": "paper-figures",
+    "paper-search": "paper-search",
+}
 TEXT_SUFFIXES = {".env", ".json", ".md", ".patch", ".ps1", ".py", ".sh", ".txt", ".yaml", ".yml"}
 
 PRIVACY_PATTERNS = {
@@ -78,8 +85,8 @@ def validate_required(root: Path, errors: list[str]) -> None:
 
 
 def validate_skill_metadata(root: Path, errors: list[str]) -> None:
-    for name in SKILL_NAMES:
-        path = root / "skills" / name / "SKILL.md"
+    for name, dirname in SKILLS.items():
+        path = root / "skills" / dirname / "SKILL.md"
         if not path.is_file():
             continue
         text = path.read_text(encoding="utf-8")
@@ -173,7 +180,7 @@ def main() -> int:
             print(f"- {error}", file=sys.stderr)
         return 1
 
-    print(f"Validation passed: {len(REQUIRED_PATHS)} required files, {len(SKILL_NAMES)} skills, privacy scan clean.")
+    print(f"Validation passed: {len(REQUIRED_PATHS)} required files, {len(SKILLS)} skills, privacy scan clean.")
     return 0
 
 
