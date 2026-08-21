@@ -1,6 +1,6 @@
 # research-obsidian-skill
 
-[![skills.sh](https://skills.sh/b/alfredzhang98/research_obsidian_skill)](https://skills.sh/alfredzhang98/research_obsidian_skill)
+[![skills.sh](https://skills.sh/b/alfredzhang98/research-obsidian-skills)](https://skills.sh/alfredzhang98/research-obsidian-skills)
 
 A Claude Code skill suite that turns research papers and conversations into a
 well-organized, cross-linked Obsidian knowledge base. Built around one idea:
@@ -9,7 +9,7 @@ figures, a verdict, and research openings, linked into a topic hub that turns a
 pile of papers into something you can actually learn from.
 
 ```bash
-npx skills add alfredzhang98/research_obsidian_skill
+npx skills add alfredzhang98/research-obsidian-skills
 ```
 
 That installs the skills. To also get the folder skeleton, note templates, and
@@ -41,7 +41,7 @@ optionally where. There are no flags to memorise.
 | You type | What lands on disk |
 |---|---|
 | `/ai-wiki read arXiv 2309.06440` | `Research/papers/<author>-<year>-<slug>.md` — the ten-section note, figures cropped and embedded inline — plus a lightweight `Research/topics/<topic>.md` hub if nothing covers it yet, linked in both directions |
-| `/ai-wiki save https://github.com/foo/bar` | `Research/designs/<repo-slug>.md` — clean markdown via `defuddle`, `source:` URL preserved in frontmatter, downloaded images kept in a sibling `img/` folder |
+| `/ai-wiki save https://github.com/foo/bar` | `Research/designs/<repo-slug>.md` — clean markdown via `claude-defuddle`, `source:` URL preserved in frontmatter, downloaded images kept in a sibling `img/` folder |
 | `/ai-wiki write up the Kalman derivation we just did` | `Research/learning/kalman-<YYYYMMDD>.md` — §1 is your question verbatim, §5 is a worked numeric example. Both mandatory; a learning note without them is not done |
 | `/ai-wiki turn needle impedance sensing into a research plan` | `Research/topics/needle-impedance-sensing.md` — a **full** topic plan: scope with in/out boundaries, 3–6 tagged sub-areas, verbatim search queries |
 | `/ai-wiki run the search for tactile RL` | Fills that topic's §3 with the queries actually run and triages the hits into §4's **Search hits** block |
@@ -90,8 +90,8 @@ is producing a 200-line research plan when you asked it to read one paper.
 ## Install
 
 ```bash
-git clone https://github.com/alfredzhang98/research_obsidian_skill.git
-cd research_obsidian_skill
+git clone https://github.com/alfredzhang98/research-obsidian-skills.git
+cd research-obsidian-skills
 
 ./install/install.sh /path/to/your/vault          # macOS / Linux
 .\install\install.ps1 -VaultPath C:\path\to\vault # Windows
@@ -128,7 +128,7 @@ the second machine, not a working one.
 So on a new machine, after the vault has synced:
 
 ```bash
-python research_obsidian_skill/install/installer.py --skip-vault
+python research-obsidian-skills/install/installer.py --skip-vault
 ```
 
 With no arguments it resolves the vault as this repository's parent directory.
@@ -190,7 +190,7 @@ instead of scattering.
 ## Repository layout
 
 ```
-research_obsidian_skill/
+research-obsidian-skills/
 ├── README.md            LICENSE            THIRD_PARTY_NOTICES.md
 ├── skills/
 │   ├── ai-wiki/SKILL.md + references/{vault-guide,note-specs,figures-diagrams,tools}.md

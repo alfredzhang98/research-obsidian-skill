@@ -17,7 +17,7 @@ Folder routing lives in `references/vault-guide.md`. This file chooses the tool 
 | arXiv ID, DOI, or paper URL | an installed paper-study plugin | `paper-search` to locate and download/read the paper |
 | Local paper PDF | an installed PDF-reading or paper-study tool | extract locally available text; if no capable tool exists, report the missing dependency instead of inferring from the abstract |
 | Figures or tables in a paper PDF | `paper-figures` | render named full pages with its `--pages` option and crop only after visual verification |
-| Web page, article, or repository page | `defuddle` | Claude Code's built-in web fetch when available and appropriate |
+| Web page, article, or repository page | `claude-defuddle` | Claude Code's built-in web fetch when available and appropriate |
 | Systematic literature search | `paper-search` | no silent substitute; ask the user to install the dependency if unavailable |
 | Search inside the vault | an installed Obsidian search plugin | `rg --files` plus `rg` from the vault root |
 | Authored structured diagram | Mermaid | none required; Mermaid is the portable default |
@@ -68,7 +68,7 @@ Use this workflow when the user asks to strengthen or organize a topic but does 
 
 ## Web save
 
-1. Use `defuddle` when available; otherwise use the built-in web fetch capability.
+1. Use `claude-defuddle` when available; otherwise use the built-in web fetch capability.
 2. Verify the extracted title, canonical URL, and main content before saving.
 3. Route the note with `references/vault-guide.md` and preserve a `source:` URL in frontmatter.
 4. Keep locally downloaded images beside the saved web note unless the same image is curated for reuse across notes.

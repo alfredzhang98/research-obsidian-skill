@@ -42,11 +42,11 @@ REQUIRED_PATHS = (
     "templates/topic-plan.md",
 )
 
-# skill name -> directory under skills/. The defuddle skill is named "defuddle"
-# but lives in the "claude-defuddle" directory, matching the upstream repo.
+# skill name -> directory under skills/. Each name matches its directory: that
+# is what Claude Code registers, and what a user types after the slash.
 SKILLS = {
     "ai-wiki": "ai-wiki",
-    "defuddle": "claude-defuddle",
+    "claude-defuddle": "claude-defuddle",
     "paper-figures": "paper-figures",
     "paper-search": "paper-search",
 }

@@ -15,7 +15,7 @@ it triggers when your request means "put this into the knowledge base":
 | "write up the Kalman derivation we just did" | learning note |
 | "turn needle-impedance sensing into a research plan" | full topic plan |
 | "dump these 10 arXiv hits somewhere" | Inbox (staging, swept later) |
-| "save this GitHub repo / article" | design/web save via `defuddle` |
+| "save this GitHub repo / article" | design/web save via `claude-defuddle` |
 
 You can also call it explicitly: `/ai-wiki`.
 
@@ -26,7 +26,7 @@ You can also call it explicitly: `/ai-wiki`.
 | `ai-wiki` | auto-triggers on filing requests; owns routing + note specs |
 | `paper-figures` | runs as part of a paper note; extracts `figN.png` from the PDF |
 | `paper-search` | "search for X", "find papers on Y" |
-| `defuddle` | auto-triggers on any non-paper URL you want read or saved |
+| `claude-defuddle` | auto-triggers on any non-paper URL you want read or saved |
 
 ## 3. Reading a paper — the full flow
 

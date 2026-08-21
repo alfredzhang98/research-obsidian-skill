@@ -17,7 +17,7 @@ updated: 2026-08-18
 | Folder | For | Use when | Example utterance |
 |---|---|---|---|
 | `Research/papers/` | Deep per-paper notes (spec: `references/note-specs.md`) | The user has a specific paper (arXiv / PDF / DOI) to study | "read arXiv 2309.06440 for me" then write `<author>-<year>-<slug>.md` |
-| `Research/designs/` | Web pages, repos, hardware builds converted to clean markdown | The user points at a non-paper URL worth keeping | "save this GitHub repo into designs" then run `defuddle` and write here |
+| `Research/designs/` | Web pages, repos, hardware builds converted to clean markdown | The user points at a non-paper URL worth keeping | "save this GitHub repo into designs" then run `claude-defuddle` and write here |
 | `Research/topics/` | Lightweight topic hubs and full topic plans / MOCs (spec: `references/note-specs.md`) | The first paper in a direction needs a home; the user asks for a topic plan; or a lightweight hub reaches 5+ linked papers and is ready for a recommended upgrade | "create a hub for safe robot learning"; run a systematic search only if the user explicitly requests it |
 | `Research/learning/` | Conversation-derived understanding (spec: `references/note-specs.md`) | A session produced a keep-worthy concept or derivation | "write up the Kalman derivation we just did as a learning note" |
 | `Research/ideas/` | The user's **own** unvetted research ideas — one file per idea, carrying an explicit prior-art-check gate | The user proposes something they might work on, before any literature check confirms it is novel | "record this adaptive-control idea for later" then `<idea-slug>.md`; keep it out of `topics/` until the prior-art check passes |
