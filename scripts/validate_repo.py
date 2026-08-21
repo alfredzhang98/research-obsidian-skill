@@ -59,6 +59,7 @@ PRIVACY_PATTERNS = {
     "email address": re.compile(r"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b", re.IGNORECASE),
     "GitHub token": re.compile(r"\bgh[pousr]_[A-Za-z0-9_]{20,}\b"),
     "OpenAI-style secret": re.compile(r"\bsk-[A-Za-z0-9_-]{20,}\b"),
+    "Semantic Scholar key": re.compile(r"\bs2k-[A-Za-z0-9_-]{20,}\b"),
     "Google API key": re.compile(r"\bAIza[A-Za-z0-9_-]{25,}\b"),
     "private key": re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"),
     "non-English Han text": re.compile(r"[\u3400-\u9fff]"),

@@ -3,7 +3,7 @@ name: tools
 description: Tool selection, fallbacks, and canonical workflows for paper, topic, web, and learning notes
 metadata:
   type: spec
-updated: 2026-08-18
+updated: 2026-08-21
 ---
 
 # Tool and Skill Selection
@@ -72,6 +72,14 @@ Use this workflow when the user asks to strengthen or organize a topic but does 
 2. Verify the extracted title, canonical URL, and main content before saving.
 3. Route the note with `references/vault-guide.md` and preserve a `source:` URL in frontmatter.
 4. Keep locally downloaded images beside the saved web note unless the same image is curated for reuse across notes.
+
+## When not to reach for a skill
+
+- A one-off script — a single crop, a throwaway regex, one fetch — that will not recur. Run it inline; skills are for workflows that repeat.
+- Vault operations the user can do faster by hand in the Obsidian UI.
+
+Building a skill for work that happened once costs more than it saves, and the
+unused skill still occupies the selection table afterwards.
 
 ## Failure discipline
 
