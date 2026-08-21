@@ -18,12 +18,16 @@ Steps:
 
 Usage:
     python install/installer.py [VAULT_PATH] [AI_WIKI_NAME] [PAPER_SEARCH_DIR]
+                                [--skip-vault]
+
+``--skip-vault`` runs only the machine-scoped half (steps 1-user, 2, 3, 4, 5),
+which is what you want when the vault already carries a customised ai-wiki,
+rules set, or CLAUDE.md that must not be overwritten.
 """
 
 from __future__ import annotations
 
 import argparse
-import os
 import shutil
 import subprocess
 import sys
@@ -76,6 +80,11 @@ def run(cmd: list[str], cwd: Path | None = None) -> subprocess.CompletedProcess:
 def read_deps(repo_dir: Path) -> dict[str, str]:
     deps: dict[str, str] = {}
     path = repo_dir / "install" / "dependencies.env"
+    if not path.is_file():
+        sys.exit(
+            f"error: {path} is missing. It pins the third-party revisions and must ship "
+            "with the repository; check that .gitignore does not exclude it."
+        )
     for line in path.read_text(encoding="utf-8").splitlines():
         line = line.strip()
         if not line or line.startswith("#") or "=" not in line:
@@ -90,16 +99,34 @@ def which(cmd: str) -> str | None:
 
 
 def find_python() -> str | None:
-    for candidate in ("python3", "python"):
-        found = which(candidate)
-        if found:
-            return found
+    """Return a Python 3 interpreter that actually runs.
+
+    Candidates are probed rather than trusted: on Windows ``python3`` normally
+    resolves to the Microsoft Store app-execution alias, which is a stub, not
+    an interpreter. The interpreter running this installer is tried first.
+    """
+    for candidate in (sys.executable, which("python3"), which("python")):
+        if not candidate:
+            continue
+        try:
+            probe = subprocess.run(
+                [candidate, "-c", "import sys; print(sys.version_info[0])"],
+                capture_output=True, text=True, timeout=30,
+            )
+        except (OSError, subprocess.SubprocessError):
+            continue
+        if probe.returncode == 0 and probe.stdout.strip() == "3":
+            return candidate
     return None
 
 
-def ensure_figures_python(skills_home: Path, figures_dir: Path) -> str:
-    """Return a Python interpreter that has PyMuPDF and Pillow, creating a venv if needed."""
-    venv_dir = figures_dir / ".venv"
+def ensure_figures_python(venv_dir: Path) -> str:
+    """Return a Python interpreter that has PyMuPDF and Pillow, creating a venv if needed.
+
+    ``venv_dir`` lives outside the skill directory: step 1 removes and re-copies
+    the skill on every run, which would otherwise discard the environment and
+    re-download PyMuPDF each time.
+    """
     candidates = [venv_dir / "Scripts" / "python.exe", venv_dir / "bin" / "python"]
     for cand in candidates:
         if cand.is_file():
@@ -118,7 +145,9 @@ def ensure_figures_python(skills_home: Path, figures_dir: Path) -> str:
         sys.exit("error: no Python 3 interpreter found; install Python 3 and rerun")
     log("creating paper-figures venv with pymupdf + Pillow")
     venv.create(venv_dir, with_pip=True)
-    venv_python = venv_dir / ("Scripts" / "python.exe" if os.name == "nt" else "bin" / "python")
+    venv_python = next((c for c in candidates if c.is_file()), None)
+    if venv_python is None:
+        sys.exit(f"error: created {venv_dir} but found no interpreter inside it")
     run([str(venv_python), "-m", "pip", "install", "--quiet", "pymupdf", "Pillow"])
     return str(venv_python)
 
@@ -132,6 +161,15 @@ def clone_pinned(url: str, rev: str, dest: Path, label: str) -> None:
     log(f"cloning {label} @ {rev}")
     run(["git", "clone", "--quiet", url, str(dest)])
     run(["git", "-C", str(dest), "checkout", "--quiet", rev])
+
+
+def render_to(src: Path, dest: Path, values: dict[str, str]) -> None:
+    """Render ``src`` into ``dest``, leaving the source template untouched."""
+    text = src.read_text(encoding="utf-8")
+    for placeholder, value in values.items():
+        text = text.replace(placeholder, value)
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_text(text, encoding="utf-8")
 
 
 def render(path: Path, values: dict[str, str]) -> None:
@@ -148,6 +186,13 @@ def main() -> int:
     parser.add_argument("vault_path", nargs="?", type=Path, default=repo_dir.parent)
     parser.add_argument("ai_wiki_name", nargs="?", default="0ai_wiki")
     parser.add_argument("paper_search_dir", nargs="?", type=Path, default=Path.home() / "paper-search-mcp")
+    parser.add_argument(
+        "--skip-vault",
+        action="store_true",
+        help="install only the machine-scoped pieces (user skills, integrations, dependency "
+             "checkouts) and leave the vault's ai-wiki skill, rules, CLAUDE.md, settings.json, "
+             "and folder skeleton untouched",
+    )
     args = parser.parse_args()
 
     vault_path = args.vault_path.resolve()
@@ -174,11 +219,14 @@ def main() -> int:
         shutil.copytree(repo_dir / "skills" / skill, dest)
         log(f"installed skill (user): {skill}")
     vault_skills_dir = vault_path / ".claude" / "skills"
-    for skill in VAULT_SKILLS:
-        dest = vault_skills_dir / skill
-        shutil.rmtree(dest, ignore_errors=True)
-        shutil.copytree(repo_dir / "skills" / skill, dest)
-        log(f"installed skill (vault): {skill}")
+    if args.skip_vault:
+        log("--skip-vault: leaving vault-scoped skills, rules, and config untouched")
+    else:
+        for skill in VAULT_SKILLS:
+            dest = vault_skills_dir / skill
+            shutil.rmtree(dest, ignore_errors=True)
+            shutil.copytree(repo_dir / "skills" / skill, dest)
+            log(f"installed skill (vault): {skill}")
 
     # 2. claude-defuddle (pinned + patched) ---------------------------------
     # The wrapper skill lives at skills/claude-defuddle/SKILL.md; the actual
@@ -200,7 +248,7 @@ def main() -> int:
 
     # 4. Python environment for paper-figures --------------------------------
     figures_dir = skills_home / "paper-figures"
-    figures_python = ensure_figures_python(skills_home, figures_dir)
+    figures_python = ensure_figures_python(integrations_dir / "paper-figures-venv")
     defuddle_python = find_python() or figures_python
 
     # 5. Render placeholders -------------------------------------------------
@@ -221,40 +269,41 @@ def main() -> int:
     render(skills_home / "claude-defuddle" / "SKILL.md", values)
     log("rendered skill placeholders")
 
-    # 6. AI-managed folder + templates ---------------------------------------
-    for sub in AI_WIKI_SUBDIRS:
-        (ai_wiki_dir / sub).mkdir(parents=True, exist_ok=True)
-    shutil.copytree(repo_dir / "templates", ai_wiki_dir / "Templates", dirs_exist_ok=True)
-    log(f"wrote AI folder skeleton + templates under {ai_wiki_name}/")
+    if not args.skip_vault:
+        # 6. AI-managed folder + templates ---------------------------------------
+        for sub in AI_WIKI_SUBDIRS:
+            (ai_wiki_dir / sub).mkdir(parents=True, exist_ok=True)
+        shutil.copytree(repo_dir / "templates", ai_wiki_dir / "Templates", dirs_exist_ok=True)
+        log(f"wrote AI folder skeleton + templates under {ai_wiki_name}/")
 
-    # 7. Rules ---------------------------------------------------------------
-    rules_dir.mkdir(parents=True, exist_ok=True)
-    if not (rules_dir / "my.md").exists():
-        shutil.copy(repo_dir / "rules" / "my.md", rules_dir / "my.md")
-    shutil.copy(repo_dir / "rules" / "permissions.md", rules_dir / "permissions.md")
-    if not (rules_dir / "active.md").exists():
-        shutil.copy(repo_dir / "rules" / "active.md", rules_dir / "active.md")
-    for name in ("my.md", "permissions.md", "active.md"):
-        target = rules_dir / name
-        if target.exists():
-            render(target, values)
-    log("wrote .claude/rules/{my,permissions,active}.md (my.md / active.md kept if present)")
+        # 7. Rules ---------------------------------------------------------------
+        rules_dir.mkdir(parents=True, exist_ok=True)
+        if not (rules_dir / "my.md").exists():
+            shutil.copy(repo_dir / "rules" / "my.md", rules_dir / "my.md")
+        shutil.copy(repo_dir / "rules" / "permissions.md", rules_dir / "permissions.md")
+        if not (rules_dir / "active.md").exists():
+            shutil.copy(repo_dir / "rules" / "active.md", rules_dir / "active.md")
+        for name in ("my.md", "permissions.md", "active.md"):
+            target = rules_dir / name
+            if target.exists():
+                render(target, values)
+        log("wrote .claude/rules/{my,permissions,active}.md (my.md / active.md kept if present)")
 
-    # 8. CLAUDE.md + settings.json -------------------------------------------
-    (vault_path / ".claude").mkdir(parents=True, exist_ok=True)
-    claude_md = vault_path / "CLAUDE.md"
-    if claude_md.exists():
-        log("CLAUDE.md already present; leaving it untouched")
-    else:
-        template = repo_dir / "install" / "CLAUDE.template.md"
-        render(template, values)
-        shutil.copy(template, claude_md)
-        log("wrote CLAUDE.md")
+        # 8. CLAUDE.md + settings.json -------------------------------------------
+        (vault_path / ".claude").mkdir(parents=True, exist_ok=True)
+        claude_md = vault_path / "CLAUDE.md"
+        if claude_md.exists():
+            log("CLAUDE.md already present; leaving it untouched")
+        else:
+            render_to(repo_dir / "install" / "CLAUDE.template.md", claude_md, values)
+            log("wrote CLAUDE.md")
 
-    settings_template = repo_dir / "install" / "settings.template.json"
-    render(settings_template, values)
-    shutil.copy(settings_template, vault_path / ".claude" / "settings.json")
-    log("wrote .claude/settings.json")
+        render_to(
+            repo_dir / "install" / "settings.template.json",
+            vault_path / ".claude" / "settings.json",
+            values,
+        )
+        log("wrote .claude/settings.json")
 
     print()
     print("Done.")

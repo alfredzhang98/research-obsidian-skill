@@ -54,7 +54,7 @@ The end-to-end flow the suite is designed for:
 "read arXiv 2309.06440 for me"
       │
       ▼
-claude-paper (or paper-search) ──► paper-figures ──► ai-wiki
+paper-search ────────────────────► paper-figures ──► ai-wiki
   download + parse                 crop figN.png      file the note
                                                         │
                     ┌───────────────────────────────────┤

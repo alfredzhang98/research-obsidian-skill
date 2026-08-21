@@ -36,8 +36,7 @@ you: "read arXiv 2309.06440"
 
 What happens, in order:
 
-1. **Parse** — `claude-paper:study` (or `paper-search read`) downloads and
-   extracts the text.
+1. **Parse** — `paper-search read` downloads the PDF and extracts its text.
 2. **Figures** — `paper-figures` crops `figN.png` / `tableN.png` into
    `<AI_WIKI>/_attachments/paper-figures/<slug>/`.
 3. **Note** — `ai-wiki` copies `Templates/paper-note.md` to

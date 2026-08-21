@@ -8,6 +8,9 @@
 **/credentials*
 **/*.env
 **/.env
+# ...except the pinned-revision file the installer reads; it carries no secrets
+# and a clone without it cannot install.
+!install/dependencies.env
 **/secrets*
 **/token*
 **/api_key*
