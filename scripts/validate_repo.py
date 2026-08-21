@@ -55,7 +55,7 @@ TEXT_SUFFIXES = {".env", ".json", ".md", ".patch", ".ps1", ".py", ".sh", ".txt",
 PRIVACY_PATTERNS = {
     "Windows user path": re.compile(r"[A-Za-z]:[\\/]+Users[\\/]", re.IGNORECASE),
     "macOS user path": re.compile(r"/Users/(?!you(?:/|\b)|<)[^\s/]+/"),
-    "OneDrive path": re.compile(r"\bOneDrive\b", re.IGNORECASE),
+    "OneDrive path": re.compile(r"OneDrive[\\\/]|[\\\/]OneDrive\b", re.IGNORECASE),
     "email address": re.compile(r"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b", re.IGNORECASE),
     "GitHub token": re.compile(r"\bgh[pousr]_[A-Za-z0-9_]{20,}\b"),
     "OpenAI-style secret": re.compile(r"\bsk-[A-Za-z0-9_-]{20,}\b"),

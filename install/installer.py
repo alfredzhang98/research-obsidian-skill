@@ -12,9 +12,15 @@ Steps:
   3. Clone ``paper-search-mcp`` at a pinned revision.
   4. Create (or reuse) a Python environment with PyMuPDF + Pillow for paper-figures.
   5. Render every ``{{...}}`` placeholder in skills, rules, and config templates.
-  6. Create the AI-managed folder and copy the note templates into it.
-  7. Write ``.claude/rules/{my,permissions,active}.md``, ``CLAUDE.md``, and
+  6. Seed dependency ``.env`` files from a synced secrets directory, if one exists.
+  7. Create the AI-managed folder and copy the note templates into it.
+  8. Write ``.claude/rules/{my,permissions,active}.md``, ``CLAUDE.md``, and
      ``.claude/settings.json``.
+
+On a machine that already has the vault (synced by OneDrive, Dropbox, or the
+like), ``--skip-vault`` installs only the machine-scoped half. That is the
+new-machine command: the vault arrives with the sync client, this renders the
+paths for the local machine.
 
 Usage:
     python install/installer.py [VAULT_PATH] [AI_WIKI_NAME] [PAPER_SEARCH_DIR]
@@ -163,6 +169,35 @@ def clone_pinned(url: str, rev: str, dest: Path, label: str) -> None:
     run(["git", "-C", str(dest), "checkout", "--quiet", rev])
 
 
+def has_values(path: Path) -> bool:
+    """True if an env file holds at least one non-empty, non-comment assignment."""
+    if not path.is_file():
+        return False
+    for line in path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if line and not line.startswith("#") and "=" in line and line.split("=", 1)[1].strip():
+            return True
+    return False
+
+
+def seed_env(secrets_dir: Path, name: str, dest: Path) -> None:
+    """Copy ``<secrets_dir>/<name>.env`` to ``dest`` unless ``dest`` is already filled in.
+
+    The secrets directory is expected to travel with the vault (a synced folder),
+    not with this repository -- keys must never be committed. Absent directory or
+    file means this step does nothing.
+    """
+    src = secrets_dir / f"{name}.env"
+    if not src.is_file():
+        return
+    if has_values(dest):
+        log(f"{dest.name} already has values; left untouched")
+        return
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy(src, dest)
+    log(f"seeded {dest.name} from {src}")
+
+
 def render_to(src: Path, dest: Path, values: dict[str, str]) -> None:
     """Render ``src`` into ``dest``, leaving the source template untouched."""
     text = src.read_text(encoding="utf-8")
@@ -187,6 +222,13 @@ def main() -> int:
     parser.add_argument("ai_wiki_name", nargs="?", default="0ai_wiki")
     parser.add_argument("paper_search_dir", nargs="?", type=Path, default=Path.home() / "paper-search-mcp")
     parser.add_argument(
+        "--secrets-dir",
+        type=Path,
+        default=None,
+        help="directory holding synced <name>.env files to seed dependency checkouts with "
+             "(default: <vault>/.claude/secrets). Keys live with the vault, never in this repo",
+    )
+    parser.add_argument(
         "--skip-vault",
         action="store_true",
         help="install only the machine-scoped pieces (user skills, integrations, dependency "
@@ -198,6 +240,7 @@ def main() -> int:
     vault_path = args.vault_path.resolve()
     ai_wiki_name = args.ai_wiki_name
     paper_search_dir = args.paper_search_dir.resolve()
+    secrets_dir = (args.secrets_dir or vault_path / ".claude" / "secrets").resolve()
     skills_home = Path.home() / ".claude" / "skills"
     integrations_dir = Path.home() / ".claude" / "integrations"
     rules_dir = vault_path / ".claude" / "rules"
@@ -245,6 +288,7 @@ def main() -> int:
 
     # 3. paper-search-mcp (pinned) ------------------------------------------
     clone_pinned(deps["PAPER_SEARCH_URL"], deps["PAPER_SEARCH_REV"], paper_search_dir, "paper-search-mcp")
+    seed_env(secrets_dir, "paper-search", paper_search_dir / ".env")
 
     # 4. Python environment for paper-figures --------------------------------
     figures_dir = skills_home / "paper-figures"
