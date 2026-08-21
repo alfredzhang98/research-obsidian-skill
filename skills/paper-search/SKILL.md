@@ -12,10 +12,12 @@ Before running a command, check that the placeholder was rendered and the direct
 ## Command prefix
 
 ```bash
-uv run --directory "{{PAPER_SEARCH_DIR}}" paper-search
+PYTHONIOENCODING=utf-8 uv run --directory "{{PAPER_SEARCH_DIR}}" paper-search
 ```
 
 Do not assume `paper-search` is globally installed. Use the full prefix so the pinned dependency environment is selected consistently.
+
+`PYTHONIOENCODING=utf-8` is required, not cosmetic. The CLI writes extracted paper text straight to stdout; on a Windows console the default cp1252 codec raises `UnicodeEncodeError` on the first mathematical or Greek character, and `read` returns `{"status": "error", ...}` instead of the paper. Any paper with an equation in it will trip this. On PowerShell use `$env:PYTHONIOENCODING = "utf-8"` before the call.
 
 ## Search
 

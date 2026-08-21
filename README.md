@@ -1,6 +1,6 @@
 # research-obsidian-skill
 
-[![skills.sh](https://skills.sh/b/alfredzhang98/research-obsidian-skills)](https://skills.sh/alfredzhang98/research-obsidian-skills)
+[![skills.sh](https://skills.sh/b/alfredzhang98/research-obsidian-skill)](https://skills.sh/alfredzhang98/research-obsidian-skill)
 
 A Claude Code skill suite that turns research papers and conversations into a
 well-organized, cross-linked Obsidian knowledge base. Built around one idea:
@@ -9,7 +9,7 @@ figures, a verdict, and research openings, linked into a topic hub that turns a
 pile of papers into something you can actually learn from.
 
 ```bash
-npx skills add alfredzhang98/research-obsidian-skills
+npx skills add alfredzhang98/research-obsidian-skill
 ```
 
 That installs the skills. To also get the folder skeleton, note templates, and
@@ -90,8 +90,8 @@ is producing a 200-line research plan when you asked it to read one paper.
 ## Install
 
 ```bash
-git clone https://github.com/alfredzhang98/research-obsidian-skills.git
-cd research-obsidian-skills
+git clone https://github.com/alfredzhang98/research-obsidian-skill.git
+cd research-obsidian-skill
 
 ./install/install.sh /path/to/your/vault          # macOS / Linux
 .\install\install.ps1 -VaultPath C:\path\to\vault # Windows
@@ -112,40 +112,80 @@ overwrites an existing `CLAUDE.md`.
 
 ## Working across several machines
 
-The design separates what can travel from what cannot.
+Put the vault in a sync folder — OneDrive, Dropbox, Syncthing, or a git repo of
+its own — and the design splits cleanly in two.
 
-**Travels** (put the vault in OneDrive, Dropbox, Syncthing, or a git repo of its
-own): your notes, `.claude/rules/`, `CLAUDE.md`, the vault-scoped `ai-wiki`
-skill, this repository, and — if you keep one — a `<vault>/.claude/secrets/`
-directory holding API keys.
+**Travels with the vault.** Your notes, `.claude/rules/`, `CLAUDE.md`, the
+vault-scoped `ai-wiki` skill, this repository, and `<vault>/.claude/secrets/`
+holding your API keys. Nothing here is machine-specific.
 
-**Cannot travel**: the user-scoped skills and their dependencies. Their
-`SKILL.md` files have absolute paths rendered into them (interpreter, script,
-dependency checkout), and the `paper-figures` virtualenv contains
-platform-specific binaries. Syncing those verbatim produces a broken install on
-the second machine, not a working one.
+**Cannot travel.** The user-scoped skills (`paper-search`, `paper-figures`,
+`claude-defuddle`) and their dependencies. Their `SKILL.md` files have absolute
+paths rendered into them — interpreter, script, dependency checkout — and the
+`paper-figures` virtualenv holds platform-specific binaries. Copying those to a
+second machine produces a broken install, not a working one. They are cheap to
+regenerate, so regenerate them.
 
-So on a new machine, after the vault has synced:
+Sync is the normal transport; `git pull` is the backstop for when it lags.
 
-```bash
-python research-obsidian-skills/install/installer.py --skip-vault
+### New machine: hand this to your coding agent
+
+The setup is one command, but you do not have to remember it. Paste this:
+
+```text
+This Obsidian vault syncs between my machines, but the machine-scoped half of my
+Claude Code skills does not. Please set this machine up.
+
+1. From the vault root, run:
+     python research-obsidian-skill/install/installer.py --skip-vault
+   (the folder may be named research_obsidian_skill if it arrived by file sync)
+
+2. Verify: ~/.claude/skills/ should now hold paper-search, paper-figures and
+   claude-defuddle, and no SKILL.md under it should still contain "{{".
+
+3. Smoke-test the search CLI:
+     PYTHONIOENCODING=utf-8 uv run --directory ~/paper-search-mcp \
+       paper-search search "bioimpedance needle" -s arxiv -n 1
+
+4. Confirm ~/paper-search-mcp/.env has values. The installer seeds it from
+   <vault>/.claude/secrets/paper-search.env when that file exists; if it did not,
+   tell me which keys are missing rather than inventing any.
+
+Prerequisites are Python 3, git and uv. If one is missing, tell me — do not
+install system software without asking. Report the exact paths you wrote.
 ```
 
-With no arguments it resolves the vault as this repository's parent directory.
-`--skip-vault` installs only the machine-scoped half and leaves every synced
-vault file alone — without it, the repo's generic public copies of `ai-wiki`,
-`permissions.md`, and `settings.json` would overwrite the ones you have tuned.
+`--skip-vault` is the important flag: it installs only the machine-scoped half
+and leaves the synced vault files alone. Without it, this repo's generic public
+copies of `ai-wiki`, `permissions.md` and `settings.json` overwrite the ones you
+have tuned. The installer is idempotent — re-run it after every `git pull`.
 
-### Syncing API keys
+### API keys
 
-If `<vault>/.claude/secrets/<name>.env` exists, the installer seeds the matching
-dependency's `.env` from it — `paper-search.env` seeds
-`~/paper-search-mcp/.env`. An `.env` that already has values is left untouched,
-so a local override always wins.
+Keys live in `<vault>/.claude/secrets/<name>.env` so they ride along with the
+vault and never enter this repository. On install, `<name>.env` is copied to the
+matching dependency; an `.env` that already holds values is left untouched, so a
+local override always wins.
 
-Keys therefore ride along with the vault and never enter this repository.
-`install/dependencies.env` — which *is* committed — holds only pinned upstream
-revisions, no credentials.
+Today one file is read: **`paper-search.env`** → `~/paper-search-mcp/.env`.
+Create it by copying `~/paper-search-mcp/.env.example`, then fill in only what
+you need — every key is optional, and the sources that need no key at all
+(arXiv, PubMed, Crossref, OpenAlex, bioRxiv, DBLP) are most of the useful ones.
+
+| Key | Get it from | What you lose without it |
+|---|---|---|
+| `PAPER_SEARCH_MCP_SEMANTIC_SCHOLAR_API_KEY` | [semanticscholar.org/product/api](https://www.semanticscholar.org/product/api) | Semantic Scholar still answers but rate-limits hard; this is the only source that returns citation counts, so it is the one key worth getting |
+| `PAPER_SEARCH_MCP_UNPAYWALL_EMAIL` | just your email address | The open-access PDF fallback is skipped entirely — cheapest win on this list |
+| `PAPER_SEARCH_MCP_CORE_API_KEY` | [core.ac.uk/services/api](https://core.ac.uk/services/api) | CORE searches are rate-limited and truncated |
+| `PAPER_SEARCH_MCP_DOAJ_API_KEY` | [doaj.org/apply-for-api-key](https://doaj.org/apply-for-api-key/) | DOAJ drops to 100 requests/hour |
+| `PAPER_SEARCH_MCP_ZENODO_ACCESS_TOKEN`, `..._OPENAIRE_API_KEY`, `..._IEEE_API_KEY`, `..._ACM_API_KEY`, `..._CITESEERX_API_KEY` | each provider | Those specific sources are unavailable; leave blank unless you use them |
+
+Leave a key blank rather than inventing a value — the CLI prints a clear warning
+for each unset key at startup and carries on with the sources that work.
+
+> **Do not commit a secrets directory.** `scripts/validate_repo.py` scans every
+> text file for GitHub, OpenAI, Google and Semantic Scholar credential shapes,
+> plus machine paths, and fails the build on a hit. Run it before pushing.
 
 ## The workflow it enables
 
@@ -190,7 +230,7 @@ instead of scattering.
 ## Repository layout
 
 ```
-research-obsidian-skills/
+research-obsidian-skill/
 ├── README.md            LICENSE            THIRD_PARTY_NOTICES.md
 ├── skills/
 │   ├── ai-wiki/SKILL.md + references/{vault-guide,note-specs,figures-diagrams,tools}.md
