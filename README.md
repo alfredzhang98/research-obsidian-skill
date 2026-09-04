@@ -19,7 +19,8 @@ rules modules, run the full installer below.
 
 | Component | What it does |
 |---|---|
-| `skills/ai-wiki/` | The filing brain. Routes content to the right folder, enforces filename + frontmatter + section specs, embeds figures, and maintains the reciprocal wikilink discipline. Ships with 4 reference docs (routing, note specs, figures, tool selection). |
+| `skills/ai-wiki/` | The filing brain, and the default command. Routes content to the right folder, enforces filename + frontmatter + section specs, embeds figures, requires at least one wikilink to an existing note. **Creates no topic hubs.** Ships with 4 reference docs (routing, note specs, figures, tool selection) that both filing skills share. |
+| `skills/ai-wiki-full/` | The topic-aware variant. Runs `ai-wiki`, then places the note under a topic hub with reciprocal links — creating a hub only when it passes the admission test. A thin delta over `ai-wiki`; it duplicates none of the reference docs. |
 | `skills/paper-figures/` | Crops named `figN.png` / `tableN.png` out of a paper PDF by caption-region detection, for inline embedding in a note. |
 | `skills/paper-search/` | Wrapper for the `paper-search-mcp` CLI (arXiv, PubMed, Semantic Scholar, Crossref, OpenAlex, …) — search, download, and read. |
 | `skills/claude-defuddle/` | *(installed, not vendored)* third-party skill for extracting clean markdown from web pages, YouTube, podcasts, and papers. |
@@ -33,18 +34,34 @@ rules modules, run the full installer below.
 triggers on any request that means *"put this into the knowledge base"*. Type
 `/ai-wiki` when you want to force it, or when your phrasing is ambiguous.
 
-### What goes after `/ai-wiki`
+### Two commands
+
+| Command | What it does | When |
+|---|---|---|
+| **`/ai-wiki`** (default) | Writes one note and requires at least one wikilink to an **existing** note. Creates no topic. | Reading a paper, saving a conversation, quick filing |
+| **`/ai-wiki-full`** | The same, plus placement under a topic hub with reciprocal links. A hub is created only after the admission test passes. | Filing under a direction, building or extending a direction map, tidying a topic |
+
+Topics are off by default on purpose. When every paper spawns its own hub, the
+topic count tracks the paper count and the hubs organise nothing — they just give
+each paper a longer filename. **A topic is a research direction, not a paper's
+subject.** Before a hub is created, all three admission tests must pass: can you
+name three other papers you would actually read that belong in it; could it hold
+5-15 notes; can no existing hub really hold it? Finer distinctions become
+**sub-areas inside one hub's §2**, never separate files.
+
+### What goes after the command
 
 The same thing you would have said in plain language: **what to file**, and
 optionally where. There are no flags to memorise.
 
 | You type | What lands on disk |
 |---|---|
-| `/ai-wiki read arXiv 2309.06440` | `Research/papers/<author>-<year>-<slug>.md` — the ten-section note, figures cropped and embedded inline — plus a lightweight `Research/topics/<topic>.md` hub if nothing covers it yet, linked in both directions |
+| `/ai-wiki read arXiv 2309.06440` | `Research/papers/<author>-<year>-<slug>.md` — the note, figures cropped and embedded inline, linked to the nearest existing note. No hub is created |
+| `/ai-wiki-full read arXiv 2309.06440` | The same note, plus placement under a topic hub with links in both directions — creating a lightweight `Research/topics/<topic>.md` only if the admission test passes |
 | `/ai-wiki save https://github.com/foo/bar` | `Research/designs/<repo-slug>.md` — clean markdown via `claude-defuddle`, `source:` URL preserved in frontmatter, downloaded images kept in a sibling `img/` folder |
 | `/ai-wiki write up the Kalman derivation we just did` | `Research/learning/kalman-<YYYYMMDD>.md` — §1 is your question verbatim, §5 is a worked numeric example. Both mandatory; a learning note without them is not done |
-| `/ai-wiki turn needle impedance sensing into a research plan` | `Research/topics/needle-impedance-sensing.md` — a **full** topic plan: scope with in/out boundaries, 3–6 tagged sub-areas, verbatim search queries |
-| `/ai-wiki run the search for tactile RL` | Fills that topic's §3 with the queries actually run and triages the hits into §4's **Search hits** block |
+| `/ai-wiki-full turn needle impedance sensing into a research plan` | `Research/topics/needle-impedance-sensing.md` — a **full** topic plan: scope with in/out boundaries, 3–6 tagged sub-areas, verbatim search queries |
+| `/ai-wiki-full run the search for tactile RL` | Fills that topic's §3 with the queries actually run and triages the hits into §4's **Search hits** block |
 | `/ai-wiki dump these 10 arXiv hits somewhere` | `Inbox/` — staging, swept later. Nothing pretends to be a reviewed note |
 | `/ai-wiki file this` (after a long session) | Whatever is in hand gets routed by `references/vault-guide.md` and written to the folder that fits |
 
@@ -157,7 +174,7 @@ install system software without asking. Report the exact paths you wrote.
 
 `--skip-vault` is the important flag: it installs only the machine-scoped half
 and leaves the synced vault files alone. Without it, this repo's generic public
-copies of `ai-wiki`, `permissions.md` and `settings.json` overwrite the ones you
+copies of `ai-wiki`, `ai-wiki-full`, `permissions.md` and `settings.json` overwrite the ones you
 have tuned. The installer is idempotent — re-run it after every `git pull`.
 
 ### API keys
@@ -234,6 +251,7 @@ research-obsidian-skill/
 ├── README.md            LICENSE            THIRD_PARTY_NOTICES.md
 ├── skills/
 │   ├── ai-wiki/SKILL.md + references/{vault-guide,note-specs,figures-diagrams,tools}.md
+│   ├── ai-wiki-full/SKILL.md   (delta over ai-wiki; shares its references/)
 │   ├── paper-figures/SKILL.md + scripts/extract-figures.py
 │   ├── paper-search/SKILL.md
 │   └── claude-defuddle/SKILL.md

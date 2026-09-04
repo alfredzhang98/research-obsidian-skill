@@ -10,20 +10,30 @@ it triggers when your request means "put this into the knowledge base":
 
 | You say (any of these) | Result |
 |---|---|
-| "read arXiv 2309.06440" / "study this paper" | paper note, filed under a topic hub |
+| "read arXiv 2309.06440" / "study this paper" | paper note, linked to the nearest existing note (no hub created) |
+| "file this paper under <direction>" / "build a map for <direction>" | paper note **plus** topic-hub placement — this is `/ai-wiki-full` |
 | "save / organize / file this" / "write this up as a note" / "archive this into the knowledge base" | route + write whatever content is in hand |
 | "write up the Kalman derivation we just did" | learning note |
 | "turn needle-impedance sensing into a research plan" | full topic plan |
 | "dump these 10 arXiv hits somewhere" | Inbox (staging, swept later) |
 | "save this GitHub repo / article" | design/web save via `claude-defuddle` |
 
-You can also call it explicitly: `/ai-wiki`.
+You can also call them explicitly: `/ai-wiki` (default, no topic) or
+`/ai-wiki-full` (with topic-hub placement and reciprocal links).
+
+**Why topics are off by default.** One hub per paper means the topic count tracks
+the paper count, and the hubs stop organising anything. A topic is a *research
+direction*, not a paper's subject. `/ai-wiki-full` creates a hub only when all
+three admission tests pass: you can name three other papers you would actually
+read that belong in it, it could hold 5-15 notes, and no existing hub can hold
+it. Finer distinctions become **sub-areas inside one hub's §2**, not new files.
 
 ## 2. Skills, in one line each
 
 | Skill | How to use |
 |---|---|
-| `ai-wiki` | auto-triggers on filing requests; owns routing + note specs |
+| `ai-wiki` | default; auto-triggers on filing requests; owns routing + note specs; creates no topic |
+| `ai-wiki-full` | `ai-wiki` plus topic-hub placement with reciprocal links, behind an admission test |
 | `paper-figures` | runs as part of a paper note; extracts `figN.png` from the PDF |
 | `paper-search` | "search for X", "find papers on Y" |
 | `claude-defuddle` | auto-triggers on any non-paper URL you want read or saved |
@@ -40,14 +50,19 @@ What happens, in order:
 2. **Figures** — `paper-figures` crops `figN.png` / `tableN.png` into
    `<AI_WIKI>/_attachments/paper-figures/<slug>/`.
 3. **Note** — `ai-wiki` copies `Templates/paper-note.md` to
-   `Research/papers/<first-author>-<year>-<slug>.md` and fills all ten sections.
-4. **Topic** — if no topic hub covers the paper, `ai-wiki` creates a
-   *lightweight companion* hub first, then links the two reciprocally.
+   `Research/papers/<first-author>-<year>-<slug>.md` and fills every section,
+   starting with §0 — a plain-language paragraph saying what the paper actually
+   does — and finishing with the quick card, which is always written last.
+4. **Link** — at least one wikilink to an existing note, with the relationship
+   stated. Under `/ai-wiki-full` this becomes topic-hub placement with reciprocal
+   links, creating a *lightweight companion* hub only if the admission test passes.
 5. **Register** — if it opens a new direction, a one-line pointer lands in
    `.claude/rules/active.md`.
 
-The two sections that carry the note are **§2 (Research gap and novelty)** and
-**§8 (Synthesis — my take)**. A note whose §8 gives you no research opening was
+§0 exists so that you never finish a note still unsure what the paper did; if it
+cannot be written, the paper has not been understood and the note should not be
+written yet. The two sections that carry the analysis are **§2 (Research gap and
+novelty)** and **§8 (My analysis and judgement)**. A note whose §8 gives you no research opening was
 not worth writing.
 
 ## 4. The three note types
@@ -87,7 +102,7 @@ something equivalent to:
 - "expand this direction"
 - "flesh out this topic"
 
-Then `ai-wiki` fills the topic plan's §3 (verbatim `paper-search` queries),
+Then `ai-wiki-full` fills the topic plan's §3 (verbatim `paper-search` queries),
 runs them, and files hits into §4's **Search hits** block — always separate
 from **User-supplied** and **From bibliography**.
 

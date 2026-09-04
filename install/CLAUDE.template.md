@@ -18,7 +18,8 @@ Maintain well-structured, source-grounded notes in `{{AI_WIKI_DIR}}`. Read other
 
 ## Canonical resources
 
-- Skill entry point: `{{VAULT_ROOT}}/.claude/skills/ai-wiki/SKILL.md`
+- Skill entry points: `{{VAULT_ROOT}}/.claude/skills/ai-wiki/SKILL.md` (default, no topic)
+  and `{{VAULT_ROOT}}/.claude/skills/ai-wiki-full/SKILL.md` (adds topic-hub placement)
 - Templates: `{{AI_WIKI_DIR}}/Templates/`
 - Safe boundaries: `{{VAULT_ROOT}}/.claude/rules/permissions.md`
 - User profile: `{{VAULT_ROOT}}/.claude/rules/my.md`

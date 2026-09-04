@@ -26,16 +26,39 @@ Folder routing lives in `references/vault-guide.md`. This file chooses the tool 
 
 Treat plugin names as capabilities, not requirements. Check whether a preferred plugin is actually available before invoking it. Do not claim that an unavailable tool ran.
 
-## New paper note
+## Two filing commands — choose before acting
+
+| Command | What it does | When to use |
+|---|---|---|
+| `/ai-wiki` (default) | Writes one note, requiring at least one wikilink to an **existing** note. **Creates no topic** | Reading a paper, saving a conversation, quick filing |
+| `/ai-wiki-full` | The same, plus placement under a topic hub with reciprocal links; a hub is created only after the admission test passes | Explicitly filing under a direction, building or extending a direction map, tidying a topic |
+
+`/ai-wiki` is the default because once the topic count approaches the paper count, hubs organise nothing. The admission test is in `references/note-specs.md` under "What qualifies as a topic".
+
+## New paper note (`/ai-wiki`, default)
 
 1. Resolve `<AI_WIKI>` from vault configuration, defaulting to `0ai_wiki/`.
 2. Read the full paper with the preferred paper tool or the fallback above. Do not write a deep note from the abstract alone.
 3. Run `paper-figures` when figures or tables materially aid understanding. Save output under `<AI_WIKI>/_attachments/paper-figures/<paper-slug>/` and inspect its JSON manifest.
-4. Find the dominant existing topic hub. If none exists, create a **lightweight topic hub for this first paper** from `Templates/topic-plan.md`. Use only the paper and its bibliography; do not run a literature search.
-5. Copy `Templates/paper-note.md` to `Research/papers/<paper-slug>.md`, fill it per `references/note-specs.md`, and embed verified figures inline.
-6. Link both ways: paper to topic, and topic S4 plus S6 to paper.
+4. Copy `Templates/paper-note.md` to `Research/papers/<paper-slug>.md`, fill it per `references/note-specs.md`, and embed verified figures inline.
+   - **S0 "What this paper does, in plain language" and all six quick-card lines must be concrete.** If S0 cannot be written, the paper is not understood — reread before continuing.
+   - **Professional wording**: no metaphorical labels; see the wording table in `note-specs.md`.
+5. **At least one `[[wikilink]]` to an existing note** — `Glob` `Research/topics/` and `Research/papers/` first, link to the nearest, and state the relationship. **This command creates no topic.**
+6. If the note fits an existing topic, add the forward link to that topic's S6 list.
 7. If this opens active work, add one concise pointer to `.claude/rules/active.md`. This is the only dynamic rules file.
-8. When a lightweight hub reaches five linked papers, recommend upgrading it to a full plan. Do not expand it or search automatically.
+
+## Place a note under a topic (`/ai-wiki-full`)
+
+Run steps 1-4 and 7 above, then:
+
+1. `Glob` `Research/topics/` and **read S1 of every existing hub**. Filing under an existing topic is the default.
+2. If none fits, run the **admission test** (`note-specs.md`): can you name three other papers that belong in it; could it hold 5-15 notes; can no existing hub really hold it? **All three must pass to create one.**
+   - On a fail, link to the nearest existing hub and, where useful, add a sub-area row to its S2. **Fine distinctions become sub-areas, not new files.**
+   - Count first: a file count in `Research/topics/` close to that of `Research/papers/` means the granularity is already wrong, and the fix is to merge rather than add.
+3. On a pass, build the *lightweight companion* hub (`note-specs.md`, "Two modes"). S3 reads "no systematic search run yet"; S4 grows only from this paper's bibliography. **Do not run a search to build a hub.**
+4. Link both ways: paper to topic, and topic S4 row plus S6 list to paper.
+5. When a lightweight hub reaches five linked papers, recommend upgrading it to a full plan. Recommending is not doing — do not expand or search until the user agrees.
+6. Check granularity in passing: merge, upgrade, or split candidates are **proposed**; execution needs the user's agreement.
 
 ## Expand a topic without a search
 

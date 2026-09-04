@@ -5,7 +5,8 @@ The canonical, cross-platform installer. The shell and PowerShell entry points
 (``install.sh`` / ``install.ps1``) are thin wrappers around this module.
 
 Steps:
-  1. Copy owned skills: ``ai-wiki`` into ``<vault>/.claude/skills/`` (vault-scoped)
+  1. Copy owned skills: ``ai-wiki`` and ``ai-wiki-full`` into ``<vault>/.claude/skills/``
+     (vault-scoped)
      and ``paper-figures`` / ``paper-search`` / ``claude-defuddle`` into
      ``~/.claude/skills/`` (user-scoped).
   2. Clone ``claude-defuddle`` at a pinned revision and apply the portability patch.
@@ -34,7 +35,9 @@ rules set, or CLAUDE.md that must not be overwritten.
 from __future__ import annotations
 
 import argparse
+import os
 import shutil
+import stat
 import subprocess
 import sys
 import venv
@@ -55,7 +58,7 @@ PLACEHOLDERS = (
 # ai-wiki is vault-scoped (CLAUDE.md points at <vault>/.claude/skills/ai-wiki);
 # the other three are user-scoped under ~/.claude/skills.
 USER_SKILLS = ("paper-figures", "paper-search", "claude-defuddle")
-VAULT_SKILLS = ("ai-wiki",)
+VAULT_SKILLS = ("ai-wiki", "ai-wiki-full")
 
 AI_WIKI_SUBDIRS = (
     "Templates",
@@ -77,6 +80,32 @@ AI_WIKI_SUBDIRS = (
 
 def log(msg: str) -> None:
     print(f"  {msg}")
+
+
+def force_rmtree(path: Path) -> None:
+    """Remove a tree, clearing the read-only bit that defeats rmtree on Windows.
+
+    Git marks pack files under .git/objects/pack read-only. Windows refuses to
+    unlink a read-only file, so a plain rmtree(ignore_errors=True) over a git
+    checkout silently deletes the working tree, leaves .git behind, and the
+    caller's copytree then dies with FileExistsError. Chmod and retry instead,
+    and let a genuine failure raise rather than half-delete the destination.
+    """
+    if not path.exists():
+        return
+
+    def on_error(func, target, exc_info):  # noqa: ANN001 - shutil callback shape
+        try:
+            os.chmod(target, stat.S_IWRITE)
+        except OSError:
+            raise
+        func(target)
+
+    # Python 3.12 renamed the callback to onexc and deprecated onerror.
+    if sys.version_info >= (3, 12):
+        shutil.rmtree(path, onexc=lambda f, t, e: on_error(f, t, e))
+    else:
+        shutil.rmtree(path, onerror=lambda f, t, e: on_error(f, t, e))
 
 
 def run(cmd: list[str], cwd: Path | None = None) -> subprocess.CompletedProcess:
@@ -163,7 +192,7 @@ def clone_pinned(url: str, rev: str, dest: Path, label: str) -> None:
         log(f"{label} present; checking out pinned revision")
         subprocess.run(["git", "-C", str(dest), "checkout", "--quiet", rev], capture_output=True)
         return
-    shutil.rmtree(dest, ignore_errors=True)
+    force_rmtree(dest)
     log(f"cloning {label} @ {rev}")
     run(["git", "clone", "--quiet", url, str(dest)])
     run(["git", "-C", str(dest), "checkout", "--quiet", rev])
@@ -258,7 +287,7 @@ def main() -> int:
     skills_home.mkdir(parents=True, exist_ok=True)
     for skill in USER_SKILLS:
         dest = skills_home / skill
-        shutil.rmtree(dest, ignore_errors=True)
+        force_rmtree(dest)
         shutil.copytree(repo_dir / "skills" / skill, dest)
         log(f"installed skill (user): {skill}")
     vault_skills_dir = vault_path / ".claude" / "skills"
@@ -267,7 +296,7 @@ def main() -> int:
     else:
         for skill in VAULT_SKILLS:
             dest = vault_skills_dir / skill
-            shutil.rmtree(dest, ignore_errors=True)
+            force_rmtree(dest)
             shutil.copytree(repo_dir / "skills" / skill, dest)
             log(f"installed skill (vault): {skill}")
 
