@@ -43,9 +43,9 @@ Routine filing (one obvious folder, no figures) needs none of them — the proce
    - Uncommitted, exploratory, or batch hits go to `Inbox/`, not a real folder.
    - Genuinely ambiguous between two folders: ask, do not guess and duplicate.
 2. **Name** — per `references/note-specs.md` (lowercase kebab-case):
-   - paper → `Research/papers/<first-author-lastname>-<year>-<2-3-keyword-slug>.md`
+   - paper → `Research/papers/<first-author-lastname>-<year>-<2-3-keyword-slug>.md` (**this command creates no topic, so the note goes at the root of `papers/`**; `/ai-wiki-full` places it in `papers/<topic-slug>/`)
    - learning → `Research/learning/<topic-slug>-<YYYYMMDD>.md`
-3. **Check for an existing note first** — `Glob` the target folder before writing. Updating the right note beats creating a near-duplicate; if one already exists, merge into it and say so.
+3. **Check for an existing note first** — `Glob` the target folder before writing (for papers use `Research/papers/**/*.md`; **note the per-topic subfolders**). Updating the right note beats creating a near-duplicate; if one already exists, merge into it and say so.
 4. **Fill** — `Read` the matching skeleton in `Templates/` (`paper-note.md` / `learning-note.md`) and fill it **in place**; never rebuild the structure from memory. Section guidance is in `references/note-specs.md`, not in the skeleton's `{{...}}` prompts.
    - The `> [!callout]` blocks are the emphasis system — keep them, do not add new types.
    - The **quick card at the top is written last**: it compresses the finished note. If its six lines cannot be filled, the note below is not done.
@@ -55,7 +55,9 @@ Routine filing (one obvious folder, no figures) needs none of them — the proce
    - Each S8 opportunity carries all four lines (opportunity → why still unsolved → first experiment → which topic it files under). "No opportunity worth taking — <why>" is valid; an invented one is not.
    - **Professional wording**: no metaphorical labels ("this paper's cut", "the verdict", "strongest number"). See the wording table in `references/note-specs.md`. Every judgement must land on specific evidence.
    - Read the paper before writing. Never fill a section from the abstract; if the PDF text for a section is unavailable, write `{{not available in source}}` rather than plausible filler.
-5. **Figures** — per `references/figures-diagrams.md`: paper figures via the `paper-figures` skill into `_attachments/paper-figures/<paper-slug>/`, embedded **at the section where each figure does the work**. Authored diagrams use a mermaid fence. ASCII art is banned.
+5. **Figures** — per `references/figures-diagrams.md`: paper figures via the `paper-figures` skill into `_attachments/paper-figures/<paper-slug>/` (**the attachment tree stays flat, never mirrored into topic folders**), embedded **at the section where each figure does the work**.
+   - **The embed prefix depends on the note's depth**: `../../_attachments/...` at the `papers/` root, `../../../_attachments/...` inside `papers/<topic-slug>/`. This is the one thing that fails silently when a note moves — spot-check one image.
+   - Authored diagrams use a mermaid fence. ASCII art is banned.
 6. **Link (mandatory, at least one)** — the note must carry at least one `[[wikilink]]` to an **existing** note: a hub in `Research/topics/`, another paper note, or a learning note.
    - `Glob` `Research/topics/` and `Research/papers/` first, pick the nearest target, and state the relationship in a sentence rather than dropping a bare link.
    - **This command does not create topics.** If there is genuinely nothing to link to, flag in `.claude/rules/active.md` that this opens a new area and tell the user that `/ai-wiki-full` is the command that builds a hub.
@@ -65,7 +67,8 @@ Routine filing (one obvious folder, no figures) needs none of them — the proce
 ## Self-check before finishing
 
 - [ ] Every path written is inside the AI-managed folder
-- [ ] Filename matches the spec for its note type
+- [ ] Filename matches the spec for its note type; a paper note sits at the `papers/` root (this command creates no topic)
+- [ ] **Embed prefix matches the note's depth**, and at least one image was spot-checked
 - [ ] Frontmatter complete (`tags:` present and specific, not just `research/`)
 - [ ] At least one `[[wikilink]]` to an **existing** note, with the relationship stated
 - [ ] Built from the actual template file, section order and callouts intact

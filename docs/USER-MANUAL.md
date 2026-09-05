@@ -50,7 +50,8 @@ What happens, in order:
 2. **Figures** — `paper-figures` crops `figN.png` / `tableN.png` into
    `<AI_WIKI>/_attachments/paper-figures/<slug>/`.
 3. **Note** — `ai-wiki` copies `Templates/paper-note.md` to
-   `Research/papers/<first-author>-<year>-<slug>.md` and fills every section,
+   `Research/papers/<first-author>-<year>-<slug>.md` (under `/ai-wiki-full` this becomes
+   `Research/papers/<topic-slug>/...`) and fills every section,
    starting with §0 — a plain-language paragraph saying what the paper actually
    does — and finishing with the quick card, which is always written last.
 4. **Link** — at least one wikilink to an existing note, with the relationship
@@ -69,7 +70,12 @@ not worth writing.
 
 ### 4.1 Paper note
 
-- **File:** `Research/papers/<first-author>-<year>-<2-3-keyword-slug>.md`
+- **File:** `Research/papers/<topic-slug>/<first-author>-<year>-<2-3-keyword-slug>.md`
+  when filed under a topic (`/ai-wiki-full`), or `Research/papers/<first-author>-<year>-<2-3-keyword-slug>.md`
+  at the root when not (`/ai-wiki`). The folder is named after the hub; attachments
+  stay flat under `_attachments/paper-figures/<paper-slug>/`, so image embeds use
+  `../../../` inside a topic folder and `../../` at the root. `[[wikilinks]]` resolve
+  by filename and survive any move.
 - **Ten sections:** Quick card · Problem · Gap & novelty · Method · Math ·
   Setup · Results · Limitations & future work · Synthesis (verdict, what
   transfers, research openings, what I'd do differently) · Citation · Figures.
@@ -156,7 +162,7 @@ work. The other two are static spec.
 
 | Content | Folder (under `<AI_WIKI>/`) |
 |---|---|
-| A paper you want to study | `Research/papers/` |
+| A paper you want to study | `Research/papers/<topic-slug>/` (or the `papers/` root if not yet filed) |
 | A non-paper URL worth keeping | `Research/designs/` |
 | A research direction | `Research/topics/` |
 | A concept from a conversation | `Research/learning/` |

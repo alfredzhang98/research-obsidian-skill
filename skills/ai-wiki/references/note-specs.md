@@ -36,7 +36,11 @@ Every judgement must land on specific evidence. "Works well" and "very innovativ
 
 ### Filenames (lowercase kebab-case)
 
-- **Paper note** → `Research/papers/<first-author-lastname>-<year>-<2-3-keyword-slug>.md`
+- **Paper note** → **stored in a per-topic folder**:
+  - Filed under a topic (`/ai-wiki-full`) → `Research/papers/<topic-slug>/<first-author-lastname>-<year>-<2-3-keyword-slug>.md`
+  - Not yet filed (`/ai-wiki`, the default) → `Research/papers/<first-author-lastname>-<year>-<2-3-keyword-slug>.md`, at the root of `papers/`
+  - **The folder name is the slug of the hub the note is filed under**, one to one. A note at the root therefore carries its own meaning: not yet placed in any direction.
+  - **The filename does not depend on the folder.** Obsidian resolves `[[wikilinks]]` by filename anywhere in the vault, so moving a note never breaks a link — **but markdown image embeds are real relative paths and change with depth** (`../../` vs `../../../`). See `references/figures-diagrams.md`, "The `../` depth is not fixed". That prefix is the only thing that must be edited by hand when a note moves.
   - First author: last name only, ASCII-folded ("Müller" → "muller", "Wang Lin" → "wang").
   - Slug: the 2-3 most distinctive title keywords; drop generic words (a/the/novel/deep/learning/based/towards); hyphenate.
   - This slug is **identical** to the `paper-slug` used for figure attachments — see `references/figures-diagrams.md`.
@@ -167,6 +171,8 @@ A **living** document: a research-direction plan that doubles as the Map-of-Cont
 **Granularity self-check**: after writing S1, ask whether it describes a direction you would invest in for a year or two, or a reworded abstract of one paper. If the latter, do not create it — link the paper note to the nearest existing hub.
 
 **When to merge**: two hubs whose S1 sections substantially overlap, or a hub that has grown by one note in six months. Propose keeping the one with more papers as the primary hub, folding the other's content into its S2 and S6, and reducing the old file to a one-line redirect. Merging is a **proposed action requiring the user's agreement**.
+
+**When a hub is merged, split, or renamed, its `Research/papers/<topic-slug>/` folder moves with it**: relocate the notes from the absorbed folder into the surviving hub's folder and delete the empty directory. Folder-to-folder moves keep the same depth, so embed prefixes do *not* change; only moves between the `papers/` root and a topic folder require the `../` fix.
 
 **Creation happens only under `/ai-wiki-full`.** `/ai-wiki` (the default) never creates a topic.
 

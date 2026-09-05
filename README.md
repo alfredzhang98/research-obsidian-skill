@@ -49,6 +49,14 @@ name three other papers you would actually read that belong in it; could it hold
 5-15 notes; can no existing hub really hold it? Finer distinctions become
 **sub-areas inside one hub's §2**, never separate files.
 
+Notes are stored **per topic on disk too**: `Research/papers/<topic-slug>/<paper-slug>.md`,
+with the folder named after the hub; anything not yet filed stays at the
+`Research/papers/` root. Attachments deliberately stay flat under
+`_attachments/paper-figures/<paper-slug>/` — papers move between topics, slugs do
+not. The one consequence to remember is that markdown image embeds are real
+relative paths, so the prefix is `../../../` inside a topic folder and `../../`
+at the root; `[[wikilinks]]` resolve by filename and are unaffected by moves.
+
 ### What goes after the command
 
 The same thing you would have said in plain language: **what to file**, and
@@ -56,8 +64,8 @@ optionally where. There are no flags to memorise.
 
 | You type | What lands on disk |
 |---|---|
-| `/ai-wiki read arXiv 2309.06440` | `Research/papers/<author>-<year>-<slug>.md` — the note, figures cropped and embedded inline, linked to the nearest existing note. No hub is created |
-| `/ai-wiki-full read arXiv 2309.06440` | The same note, plus placement under a topic hub with links in both directions — creating a lightweight `Research/topics/<topic>.md` only if the admission test passes |
+| `/ai-wiki read arXiv 2309.06440` | `Research/papers/<author>-<year>-<slug>.md` — the note, figures cropped and embedded inline, linked to the nearest existing note. No hub is created, so it stays at the `papers/` root |
+| `/ai-wiki-full read arXiv 2309.06440` | The same note, filed as `Research/papers/<topic>/<author>-<year>-<slug>.md` with links in both directions — creating a lightweight `Research/topics/<topic>.md` only if the admission test passes |
 | `/ai-wiki save https://github.com/foo/bar` | `Research/designs/<repo-slug>.md` — clean markdown via `claude-defuddle`, `source:` URL preserved in frontmatter, downloaded images kept in a sibling `img/` folder |
 | `/ai-wiki write up the Kalman derivation we just did` | `Research/learning/kalman-<YYYYMMDD>.md` — §1 is your question verbatim, §5 is a worked numeric example. Both mandatory; a learning note without them is not done |
 | `/ai-wiki-full turn needle impedance sensing into a research plan` | `Research/topics/needle-impedance-sensing.md` — a **full** topic plan: scope with in/out boundaries, 3–6 tagged sub-areas, verbatim search queries |

@@ -33,11 +33,24 @@ The skill detects numbered figure and table captions, writes named PNG files, an
 - Use an interpretive alt label that tells the reader what to inspect and why it matters:
 
 ```markdown
-![Fig. 3 — the gating branch activates only under high uncertainty](../../_attachments/paper-figures/<paper-slug>/fig3.png)
+![Fig. 3 — the gating branch activates only under high uncertainty](../../../_attachments/paper-figures/<paper-slug>/fig3.png)
 ```
 
 - Keep the paper note's S10 mapping table current: `Figure | file | embedded section | content`.
 - Do not publish or redistribute copyrighted paper figures outside the user's private research context unless the user has the necessary rights.
+
+### The `../` depth is not fixed — the most common way to break a note
+
+Paper notes are stored in per-topic folders (see `references/note-specs.md`, "Filenames"), so the number of `../` segments depends on where the note lives:
+
+| Note location | Embed prefix |
+|---|---|
+| `Research/papers/<topic-slug>/<slug>.md` (`/ai-wiki-full`, filed under a topic) | `../../../_attachments/paper-figures/<slug>/figN.png` |
+| `Research/papers/<slug>.md` (`/ai-wiki`, not yet filed) | `../../_attachments/paper-figures/<slug>/figN.png` |
+
+**When a note moves between those two places — filing it under a topic, or a hub merge or rename — the prefix must be updated in the same edit.** Obsidian resolves `[[wikilinks]]` by filename anywhere in the vault, so moving a note never breaks a link; but markdown image embeds are real relative paths and fail *silently* (the image just does not render, with no error). Spot-check one image after writing or moving a note.
+
+**The attachment tree itself stays flat** — `_attachments/paper-figures/<paper-slug>/`, never mirrored into topic folders. Papers move between topics when hubs merge or get re-filed; the paper-slug does not. Mirroring the topic tree into attachments would manufacture a batch of broken paths on every reorganisation.
 
 ## Author diagrams with Mermaid
 
@@ -63,7 +76,7 @@ If an Obsidian JSON Canvas tool is available, use it for spatial annotation or w
 
 ## Asset locations
 
-- `<AI_WIKI>/_attachments/paper-figures/<paper-slug>/` — assets used by one paper note.
+- `<AI_WIKI>/_attachments/paper-figures/<paper-slug>/` — assets used by one paper note. **Stays flat; never mirrored into topic folders** (papers move between topics, the slug does not).
 - `<AI_WIKI>/_attachments/screenshots/` — screenshots and ad hoc visual captures.
 - `<AI_WIKI>/Research/figures/` — curated visuals reused across multiple notes.
 - `claude-defuddle` saves downloaded web images beside its note in an `img/` directory; preserve that local relationship.

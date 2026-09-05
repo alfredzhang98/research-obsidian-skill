@@ -50,14 +50,24 @@ Full criteria in `references/note-specs.md` under "What qualifies as a topic". I
 
 **Do not over-build it.** No `paper-search` run, no speculative sub-area taxonomy, no invented research plan, no query strings nobody ran. The user asked for a paper to be read; the hub is scaffolding, not the deliverable. ~10 minutes, ~40 lines.
 
-### 6.4 Reciprocal linking (mandatory)
+### 6.4 Put the note in the topic's folder
+
+Paper notes live in per-topic folders: `Research/papers/<topic-slug>/<paper-slug>.md`, where **the folder name is the hub's slug**.
+
+- Filing under an existing topic → write into that existing folder.
+- A new hub was created → create `Research/papers/<new-topic-slug>/` alongside it.
+- The note was written at the `papers/` root by `/ai-wiki` and is only now being filed → move it into the subfolder **and change its embed prefix from `../../_attachments/` to `../../../_attachments/`**.
+
+> **This is the one step in this workflow that fails silently.** `[[wikilinks]]` resolve by filename anywhere in the vault, so moving a note never breaks a link; markdown image embeds are real relative paths, and a wrong depth shows up only as an image that does not render. Spot-check one image after moving. The attachment tree `_attachments/paper-figures/<paper-slug>/` **stays flat and does not follow the topic** — papers change topics, slugs do not.
+
+### 6.5 Reciprocal linking (mandatory)
 
 - The paper note links back to `[[<topic-slug>]]` (in "Related links", and named in S8's "files under topic").
 - The topic's **S4 queue row** (status + note link) and **S6 list** link forward, with S6 grouping it under the right S2 sub-area.
 - Both directions, always — one missing side and the graph stops clustering.
 - A paper that genuinely spans two topics: pick the dominant one for the reciprocal link and mention the other with a plain `[[wikilink]]`. **Never file the same paper under two hubs.**
 
-### 6.5 Five notes is a recommendation threshold, not authorisation
+### 6.6 Five notes is a recommendation threshold, not authorisation
 
 When a lightweight hub reaches five linked notes, **say it is mature enough for a full plan, then stop**. Reaching the threshold authorises nothing: no expansion, no `paper-search`, until the user agrees.
 
@@ -75,7 +85,7 @@ Each time this command runs, check once and **propose** (do not execute):
 - **Upgrade candidates**: a lightweight hub that has reached five notes.
 - **Split candidates**: a hub past roughly 15 notes where one S2 sub-area alone would hold five — only then is splitting justified, and the split-out topic passes the admission test by construction.
 
-Merging, splitting, and upgrading **all require the user's agreement before execution**.
+Merging, splitting, and upgrading **all require the user's agreement before execution**. When executing, **move the `Research/papers/<topic-slug>/` folder with the hub**: relocate notes from the absorbed folder into the surviving hub's folder and delete the empty directory. Folder-to-folder moves keep the same depth, so embed prefixes do not change.
 
 ---
 
@@ -86,6 +96,7 @@ Merging, splitting, and upgrading **all require the user's agreement before exec
 - [ ] No hub was created merely to house one paper (the 1:1 check)
 - [ ] Reciprocal links complete: paper note → topic, and topic S4 row + S6 list → paper note
 - [ ] The paper is filed under exactly one hub
+- [ ] The note sits in `Research/papers/<topic-slug>/` and its embeds use `../../../_attachments/` (not `../../`), with one image spot-checked
 - [ ] A new hub's S3 reads "no systematic search run yet" (unless the user explicitly asked for a search)
 - [ ] S4's three provenance blocks are labelled and not merged into one table
 - [ ] At the five-note threshold, only a recommendation was given — no unilateral upgrade

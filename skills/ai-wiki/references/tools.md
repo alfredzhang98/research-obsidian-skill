@@ -40,10 +40,10 @@ Treat plugin names as capabilities, not requirements. Check whether a preferred 
 1. Resolve `<AI_WIKI>` from vault configuration, defaulting to `0ai_wiki/`.
 2. Read the full paper with the preferred paper tool or the fallback above. Do not write a deep note from the abstract alone.
 3. Run `paper-figures` when figures or tables materially aid understanding. Save output under `<AI_WIKI>/_attachments/paper-figures/<paper-slug>/` and inspect its JSON manifest.
-4. Copy `Templates/paper-note.md` to `Research/papers/<paper-slug>.md`, fill it per `references/note-specs.md`, and embed verified figures inline.
+4. Copy `Templates/paper-note.md` to `Research/papers/<paper-slug>.md` (this command creates no topic, so the note goes at the `papers/` root; `/ai-wiki-full` places it in `papers/<topic-slug>/`), fill it per `references/note-specs.md`, and embed verified figures inline. **The embed prefix depends on depth**: `../../_attachments/` at the root, `../../../_attachments/` inside a topic folder.
    - **S0 "What this paper does, in plain language" and all six quick-card lines must be concrete.** If S0 cannot be written, the paper is not understood — reread before continuing.
    - **Professional wording**: no metaphorical labels; see the wording table in `note-specs.md`.
-5. **At least one `[[wikilink]]` to an existing note** — `Glob` `Research/topics/` and `Research/papers/` first, link to the nearest, and state the relationship. **This command creates no topic.**
+5. **At least one `[[wikilink]]` to an existing note** — `Glob` `Research/topics/*.md` and `Research/papers/**/*.md` first (papers have per-topic subfolders), link to the nearest, and state the relationship. **This command creates no topic.**
 6. If the note fits an existing topic, add the forward link to that topic's S6 list.
 7. If this opens active work, add one concise pointer to `.claude/rules/active.md`. This is the only dynamic rules file.
 
@@ -56,7 +56,7 @@ Run steps 1-4 and 7 above, then:
    - On a fail, link to the nearest existing hub and, where useful, add a sub-area row to its S2. **Fine distinctions become sub-areas, not new files.**
    - Count first: a file count in `Research/topics/` close to that of `Research/papers/` means the granularity is already wrong, and the fix is to merge rather than add.
 3. On a pass, build the *lightweight companion* hub (`note-specs.md`, "Two modes"). S3 reads "no systematic search run yet"; S4 grows only from this paper's bibliography. **Do not run a search to build a hub.**
-4. Link both ways: paper to topic, and topic S4 row plus S6 list to paper.
+4. Move the note into `Research/papers/<topic-slug>/` (creating that folder alongside a new hub) and, if it came from the `papers/` root, change its embed prefix `../../_attachments/` → `../../../_attachments/`. Then link both ways: paper to topic, and topic S4 row plus S6 list to paper.
 5. When a lightweight hub reaches five linked papers, recommend upgrading it to a full plan. Recommending is not doing — do not expand or search until the user agrees.
 6. Check granularity in passing: merge, upgrade, or split candidates are **proposed**; execution needs the user's agreement.
 

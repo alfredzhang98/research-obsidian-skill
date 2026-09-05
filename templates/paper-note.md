@@ -171,9 +171,16 @@ $$
 ## 10. Figures and attachments
 
 ```bash
-python ~/.claude/skills/paper-figures/scripts/extract-figures.py \
+PYTHONIOENCODING=utf-8 python ~/.claude/skills/paper-figures/scripts/extract-figures.py \
   {{pdf-path}} <AI_WIKI>/_attachments/paper-figures/{{slug}}
 ```
+
+<!-- Writing note: the number of ../ segments depends on this note's depth.
+     Research/papers/<topic-slug>/ uses ../../../_attachments/...
+     Research/papers/ (root)       uses ../../_attachments/...
+     The attachment tree stays flat. After moving a note, fix the prefix or the
+     images silently stop rendering. -->
+
 
 | Asset | File | Embedded in | Content |
 |---|---|---|---|

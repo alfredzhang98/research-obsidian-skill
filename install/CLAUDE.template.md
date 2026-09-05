@@ -20,6 +20,10 @@ Maintain well-structured, source-grounded notes in `{{AI_WIKI_DIR}}`. Read other
 
 - Skill entry points: `{{VAULT_ROOT}}/.claude/skills/ai-wiki/SKILL.md` (default, no topic)
   and `{{VAULT_ROOT}}/.claude/skills/ai-wiki-full/SKILL.md` (adds topic-hub placement)
+- Paper notes are stored per topic: `Research/papers/<topic-slug>/<paper-slug>.md`;
+  unfiled notes stay at the `Research/papers/` root. Attachments stay flat under
+  `_attachments/paper-figures/<paper-slug>/`, so embed prefixes are `../../../` inside
+  a topic folder and `../../` at the root.
 - Templates: `{{AI_WIKI_DIR}}/Templates/`
 - Safe boundaries: `{{VAULT_ROOT}}/.claude/rules/permissions.md`
 - User profile: `{{VAULT_ROOT}}/.claude/rules/my.md`
