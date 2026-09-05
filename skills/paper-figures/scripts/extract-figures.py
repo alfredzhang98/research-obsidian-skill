@@ -48,6 +48,21 @@ CAPTION_RE = re.compile(
 )
 
 
+def _caption_bands(page, exclude_bbox):
+    """Vertical (y0, y1) bands of every caption block on the page but one."""
+    bands = []
+    for block in page.get_text("blocks"):
+        if len(block) < 5:
+            continue
+        bx0, by0, bx1, by1, text = block[0], block[1], block[2], block[3], block[4]
+        if not isinstance(text, str) or not CAPTION_RE.match(text):
+            continue
+        if (bx0, by0, bx1, by1) == exclude_bbox:
+            continue
+        bands.append((by0, by1))
+    return bands
+
+
 def find_captions(page):
     """Return {kind, number, bbox, text} dictionaries for figure/table captions."""
     blocks = page.get_text("blocks")  # (x0, y0, x1, y1, text, block_no, block_type)
@@ -208,15 +223,21 @@ def _table_top_above_caption(page, caption, col_x0, col_x1, search_ratio=0.55):
             below += 1
 
     # Walk upward from the caption, keeping only rules that belong to the same
-    # tabular: a second table higher on the page sits behind a much larger gap
-    # than any row group inside one table.
+    # tabular. A table higher on the page is separated by its own caption, so
+    # that is the reliable barrier; the gap cap is only a backstop for a page
+    # whose other table has no caption of its own. Do not tighten the cap to
+    # the gap between two rules of one table -- an 11-row table puts ~0.18
+    # page heights between its midrule and its bottomrule.
     above.sort(key=lambda r: r[1], reverse=True)
     if not above or above[0][1] < cy0 - 0.06 * page_h:
         return None
-    max_gap = 0.15 * page_h
+    barriers = _caption_bands(page, caption["bbox"])
+    max_gap = 0.30 * page_h
     group_top, prev_top = above[0]
     for rule_top, rule_bottom in above[1:]:
         if prev_top - rule_bottom > max_gap:
+            break
+        if any(by0 < prev_top and by1 > rule_bottom for by0, by1 in barriers):
             break
         group_top = min(group_top, rule_top)
         prev_top = rule_top
