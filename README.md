@@ -21,6 +21,7 @@ rules modules, run the full installer below.
 |---|---|
 | `skills/ai-wiki/scripts/` | `build-paper-index.py` regenerates `Research/paper-index.md` — one greppable table of every note's slug, title, author, year, arXiv/DOI, topic, and status, used for duplicate and near-duplicate detection. `export-topic.py` lists topics and packages one (hub + its paper notes + the figures they embed) into a zip that preserves the vault's directory depths, so image embeds still resolve after extraction. |
 | `skills/ai-wiki/` | The filing brain, and the default command. Routes content to the right folder, enforces filename + frontmatter + section specs, embeds figures, requires at least one wikilink to an existing note. **Creates no topic hubs.** Ships with 4 reference docs (routing, note specs, figures, tool selection) that both filing skills share. |
+| `skills/ai-wiki-export/` | Packages one topic — hub, its paper notes, and the figures they embed — into a zip at a path the user supplies. Refuses to guess a destination: with no path it asks, rather than dropping an archive somewhere invisible. |
 | `skills/ai-wiki-full/` | The topic-aware variant. Runs `ai-wiki`, then places the note under a topic hub with reciprocal links — creating a hub only when it passes the admission test. A thin delta over `ai-wiki`; it duplicates none of the reference docs. |
 | `skills/paper-figures/` | Crops named `figN.png` / `tableN.png` out of a paper PDF by caption-region detection, for inline embedding in a note. |
 | `skills/paper-search/` | Wrapper for the `paper-search-mcp` CLI (arXiv, PubMed, Semantic Scholar, Crossref, OpenAlex, …) — search, download, and read. |
@@ -41,6 +42,7 @@ triggers on any request that means *"put this into the knowledge base"*. Type
 |---|---|---|
 | **`/ai-wiki`** (default) | Writes one note and requires at least one wikilink to an **existing** note. Creates no topic. | Reading a paper, saving a conversation, quick filing |
 | **`/ai-wiki-full`** | The same, plus placement under a topic hub with reciprocal links. A hub is created only after the admission test passes. | Filing under a direction, building or extending a direction map, tidying a topic |
+| **`/ai-wiki-export <path> [topic]`** | Packages a topic into a zip at the given path. Asks for the path if omitted. | Sending a direction to a collaborator, archiving it, reading it offline |
 
 Topics are off by default on purpose. When every paper spawns its own hub, the
 topic count tracks the paper count and the hubs organise nothing — they just give

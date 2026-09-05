@@ -34,6 +34,7 @@ it. Finer distinctions become **sub-areas inside one hub's §2**, not new files.
 |---|---|
 | `ai-wiki` | default; auto-triggers on filing requests; owns routing + note specs; creates no topic |
 | `ai-wiki-full` | `ai-wiki` plus topic-hub placement with reciprocal links, behind an admission test |
+| `ai-wiki-export` | `/ai-wiki-export <path> [topic]` — packages one topic as a zip; asks for the destination rather than guessing one |
 | `paper-figures` | runs as part of a paper note; extracts `figN.png` from the PDF |
 | `paper-search` | "search for X", "find papers on Y" |
 | `claude-defuddle` | auto-triggers on any non-paper URL you want read or saved |

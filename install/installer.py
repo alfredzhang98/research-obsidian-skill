@@ -5,7 +5,8 @@ The canonical, cross-platform installer. The shell and PowerShell entry points
 (``install.sh`` / ``install.ps1``) are thin wrappers around this module.
 
 Steps:
-  1. Copy owned skills: ``ai-wiki`` and ``ai-wiki-full`` into ``<vault>/.claude/skills/``
+  1. Copy owned skills: ``ai-wiki``, ``ai-wiki-full`` and ``ai-wiki-export`` into
+     ``<vault>/.claude/skills/``
      (vault-scoped)
      and ``paper-figures`` / ``paper-search`` / ``claude-defuddle`` into
      ``~/.claude/skills/`` (user-scoped).
@@ -58,7 +59,7 @@ PLACEHOLDERS = (
 # ai-wiki is vault-scoped (CLAUDE.md points at <vault>/.claude/skills/ai-wiki);
 # the other three are user-scoped under ~/.claude/skills.
 USER_SKILLS = ("paper-figures", "paper-search", "claude-defuddle")
-VAULT_SKILLS = ("ai-wiki", "ai-wiki-full")
+VAULT_SKILLS = ("ai-wiki", "ai-wiki-full", "ai-wiki-export")
 
 AI_WIKI_SUBDIRS = (
     "Templates",
