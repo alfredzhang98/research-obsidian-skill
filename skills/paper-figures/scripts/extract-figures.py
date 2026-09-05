@@ -133,9 +133,11 @@ def infer_figure_rect(page, caption, max_height_ratio=0.85, kind="fig"):
     """
     Return the bbox enclosing the figure or table referred to by caption.
 
-    Figures are assumed to sit above their captions. Tables are assumed to sit
-    below their captions. Raster bounds, vector bounds, and nearby text blocks
-    constrain each inferred region.
+    Figures are assumed to sit above their captions. Tables sit on whichever
+    side carries the horizontal rules (see _table_top_above_caption); when no
+    rules are found the historical assumption -- table below its caption --
+    applies. Raster bounds, vector bounds, and nearby text blocks constrain
+    each inferred region.
     """
     cx0, _, cx1, _ = caption["bbox"]
     page_rect = page.rect
@@ -151,16 +153,102 @@ def infer_figure_rect(page, caption, max_height_ratio=0.85, kind="fig"):
 
     if kind == "fig":
         return _infer_above_caption(page, caption, col_x0, col_x1, max_height_ratio)
+    rule_top = _table_top_above_caption(page, caption, col_x0, col_x1)
+    if rule_top is not None:
+        return _infer_above_caption(
+            page,
+            caption,
+            col_x0,
+            col_x1,
+            max_height_ratio,
+            body_is_text=True,
+            top_hint=rule_top,
+        )
     return _infer_below_caption(page, caption, col_x0, col_x1, max_height_ratio)
 
 
-def _infer_above_caption(page, caption, col_x0, col_x1, max_height_ratio):
+def _table_top_above_caption(page, caption, col_x0, col_x1, search_ratio=0.55):
+    """
+    Return the y of the table's top rule when the body sits above its caption,
+    else None.
+
+    LaTeX places \\caption either before or after the tabular and both are
+    common in ML papers -- assuming "below" unconditionally makes a caption-
+    above table capture a page of running text instead. Booktabs rules render
+    as wide, very thin filled rects, so count rule-like drawings on each side
+    of the caption within the same column and take the larger side. Ties and
+    rule-less tables keep the historical "below" behaviour.
+
+    The rules are also the only reliable top edge: _vector_bbox_above drops
+    them on area (a 340x0.4pt rule is under its 200 threshold), and the rows
+    themselves are text, so nothing else marks where the table starts.
+    """
+    _, cy0, _, cy1 = caption["bbox"]
+    page_h = page.rect.height
+    span = search_ratio * page_h
+    col_width = max(col_x1 - col_x0, 1.0)
+
+    above = []
+    below = 0
+    try:
+        drawings = page.get_drawings()
+    except Exception:
+        return None
+    for drawing in drawings:
+        rect = drawing.get("rect")
+        if rect is None:
+            continue
+        if rect.x1 < col_x0 or rect.x0 > col_x1:
+            continue
+        if rect.height > 2.5 or rect.width < 0.35 * col_width:
+            continue
+        if cy0 - span <= rect.y1 <= cy0 - 1:
+            above.append((rect.y0, rect.y1))
+        elif cy1 + 1 <= rect.y0 <= cy1 + span:
+            below += 1
+
+    # Walk upward from the caption, keeping only rules that belong to the same
+    # tabular: a second table higher on the page sits behind a much larger gap
+    # than any row group inside one table.
+    above.sort(key=lambda r: r[1], reverse=True)
+    if not above or above[0][1] < cy0 - 0.06 * page_h:
+        return None
+    max_gap = 0.15 * page_h
+    group_top, prev_top = above[0]
+    for rule_top, rule_bottom in above[1:]:
+        if prev_top - rule_bottom > max_gap:
+            break
+        group_top = min(group_top, rule_top)
+        prev_top = rule_top
+    count = sum(1 for r in above if r[0] >= group_top)
+    if count >= 2 and count > below:
+        return group_top
+    return None
+
+
+def _infer_above_caption(
+    page,
+    caption,
+    col_x0,
+    col_x1,
+    max_height_ratio,
+    body_is_text=False,
+    top_hint=None,
+):
+    """
+    body_is_text=True for a table sitting above its caption: the rows are text
+    blocks, so they must not be treated as surrounding prose that bounds the
+    crop from above. top_hint (the table's top rule) supplies the top edge
+    instead; the text scan is kept only as a fallback if no hint is given.
+    """
     _, cy0, _, cy1 = caption["bbox"]
     page_rect = page.rect
     page_h = page_rect.height
 
     fig_top_candidates = []
     fig_left, fig_right = col_x0, col_x1
+    if top_hint is not None:
+        fig_top_candidates.append(top_hint)
 
     image_bboxes = _image_bboxes_above(page, caption["bbox"], col_x0, col_x1)
     if image_bboxes:
@@ -190,7 +278,8 @@ def _infer_above_caption(page, caption, col_x0, col_x1, max_height_ratio):
             continue
         if by1 > nearest_paragraph_bottom:
             nearest_paragraph_bottom = by1
-    fig_top_candidates.append(nearest_paragraph_bottom)
+    if not body_is_text or not fig_top_candidates:
+        fig_top_candidates.append(nearest_paragraph_bottom)
 
     fig_top = min(fig_top_candidates)
     fig_bottom = cy1 + 2
