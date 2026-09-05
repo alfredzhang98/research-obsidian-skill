@@ -53,6 +53,8 @@ Every judgement must land on specific evidence. "Works well" and "very innovativ
   - topic-slug: 2-3 hyphenated keywords for the research direction; no date (it is a living document).
   - e.g. `bioz-needle-sensing.md`, `us-guided-cvc.md`.
 
+**`arxiv:` and `doi:` are not optional decoration — they are the only reliable dedup key.** The slug in the filename is a judgement call ("the 2-3 most distinctive keywords"), so the same paper read twice can produce different slugs and a filename-based check will miss it. When the user next hands over the same paper, step 0 of `/ai-wiki` greps exactly these two fields. **Fill whichever the paper has; fill both when it has both.** Papers with neither (older conference papers) fall back to first author's last name + `year` + `title` — which is why those three fields cannot be omitted either.
+
 ### Linkage requirement
 
 Every paper and learning note **must** contain at least one `[[wikilink]]` to a topic MOC, another paper note, or a learning note. Isolated notes become unfindable.
@@ -74,7 +76,8 @@ title: "Paper Title"
 authors: [Author1, Author2]
 year: 2026
 venue: ""
-arxiv: ""           # optional
+arxiv: ""           # fill whenever the paper has one -- dedup key
+doi: ""             # fill whenever the paper has one -- dedup key (journal/conference papers without arXiv rely on it)
 code: ""            # optional
 date_added: YYYY-MM-DD
 tags: [research/bioimpedance, research/medical-ai]

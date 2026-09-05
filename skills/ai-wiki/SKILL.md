@@ -39,13 +39,41 @@ Routine filing (one obvious folder, no figures) needs none of them — the proce
 
 ## Procedure
 
+0. **Duplicate check — before downloading or reading anything.** When the input is a paper (arXiv link, DOI, PDF), first establish whether it has already been read. **This step comes first** because everything after it is expensive: fetching the PDF, reading the full text, extracting figures. On a duplicate, all of that is wasted work.
+
+   Look it up by stable identifier, stopping at the first hit. **Do not guess the filename** — the slug is a judgement call ("the 2-3 most distinctive keywords"), so the same paper read twice can produce different slugs, and a filename search will miss it.
+
+   | Order | How |
+   |---|---|
+   | 1 | **arXiv ID**, version suffix stripped: `Grep "2101\.09207" Research/papers/` |
+   | 2 | **DOI**: `Grep "10\.1109/AIM65483" Research/papers/` |
+   | 3 | **Neither exists** (common for older conference papers): `Glob Research/papers/**/<lastname>-<year>-*.md`, then open it and confirm title and authors |
+
+   **On a hit, do not start rewriting.** Report these four things and stop for the user's decision:
+
+   - the **full path**, including the topic subfolder
+   - **`status` and `date_added`** — when it was read and how thoroughly
+   - the **Conclusion line from the quick card**, so the user recalls the earlier judgement
+   - **which topic** it is filed under
+
+   Then follow whichever the user wants:
+
+   - **Just wants to see it** → write nothing; surface the existing note
+   - **Add to or revise it** → edit the existing note in place; never create a second file
+   - **The arXiv version changed** (v1 was read, v3 supplied) → this is an **update, not a duplicate**: state what differs between versions, decide which sections that touches, and refresh `venue` / `year`
+   - **Genuinely wants a re-read** → ask why (a previous `status: skim` is a good reason), then run the full procedure and overwrite the note
+
+   **A `status: skim` note still counts as a hit** — it should be upgraded to `read`, not duplicated by a second file.
+
+   **Only on a miss do you continue to step 1.**
+
 1. **Classify** — pick exactly one destination folder from the routing table in `references/vault-guide.md`. One piece of content, one folder; anything cross-cutting rides on `tags:` and `[[wikilinks]]`, never a duplicate copy.
    - Uncommitted, exploratory, or batch hits go to `Inbox/`, not a real folder.
    - Genuinely ambiguous between two folders: ask, do not guess and duplicate.
 2. **Name** — per `references/note-specs.md` (lowercase kebab-case):
    - paper → `Research/papers/<first-author-lastname>-<year>-<2-3-keyword-slug>.md` (**this command creates no topic, so the note goes at the root of `papers/`**; `/ai-wiki-full` places it in `papers/<topic-slug>/`)
    - learning → `Research/learning/<topic-slug>-<YYYYMMDD>.md`
-3. **Check for an existing note first** — `Glob` the target folder before writing (for papers use `Research/papers/**/*.md`; **note the per-topic subfolders**). Updating the right note beats creating a near-duplicate; if one already exists, merge into it and say so.
+3. **Near-duplicate backstop** — step 0 covered exact identity; here scan the destination folder by *subject* (`Glob Research/papers/**/*.md`, noting the per-topic subfolders) for a note that is not the same paper but overlaps heavily: an earlier paper from the same group, a conference version of the same method. Prefer updating or cross-referencing that note over producing an isolated near-duplicate. The same applies to learning notes.
 4. **Fill** — `Read` the matching skeleton in `Templates/` (`paper-note.md` / `learning-note.md`) and fill it **in place**; never rebuild the structure from memory. Section guidance is in `references/note-specs.md`, not in the skeleton's `{{...}}` prompts.
    - The `> [!callout]` blocks are the emphasis system — keep them, do not add new types.
    - The **quick card at the top is written last**: it compresses the finished note. If its six lines cannot be filled, the note below is not done.
@@ -66,6 +94,8 @@ Routine filing (one obvious folder, no figures) needs none of them — the proce
 
 ## Self-check before finishing
 
+- [ ] **Step 0 duplicate check ran before any download or read** (arXiv ID → DOI → author+year), and on a hit the path was reported and the user decided
+- [ ] `arxiv:` / `doi:` filled in frontmatter whenever the paper has one — they are the only reliable dedup key
 - [ ] Every path written is inside the AI-managed folder
 - [ ] Filename matches the spec for its note type; a paper note sits at the `papers/` root (this command creates no topic)
 - [ ] **Embed prefix matches the note's depth**, and at least one image was spot-checked

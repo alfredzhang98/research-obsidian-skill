@@ -4,6 +4,7 @@ authors: []
 year:
 venue: ""
 arxiv: ""
+doi: ""
 code: ""
 date_added: {{date}}
 tags: [research/]

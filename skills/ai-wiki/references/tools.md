@@ -37,6 +37,7 @@ Treat plugin names as capabilities, not requirements. Check whether a preferred 
 
 ## New paper note (`/ai-wiki`, default)
 
+0. **Check for a duplicate before downloading** (`SKILL.md` step 0): `Grep` the arXiv ID → `Grep` the DOI → `Glob <lastname>-<year>-*.md`. On a hit, report the path, `status`, the quick card's Conclusion line, and the topic, then **stop and ask** whether the user wants to view it, extend it, or re-read it. **This runs before the paper tool** — otherwise a duplicate is fetched, read in full, and figure-extracted for nothing.
 1. Resolve `<AI_WIKI>` from vault configuration, defaulting to `0ai_wiki/`.
 2. Read the full paper with the preferred paper tool or the fallback above. Do not write a deep note from the abstract alone.
 3. Run `paper-figures` when figures or tables materially aid understanding. Save output under `<AI_WIKI>/_attachments/paper-figures/<paper-slug>/` and inspect its JSON manifest.
