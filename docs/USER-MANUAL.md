@@ -112,6 +112,29 @@ Then `ai-wiki-full` fills the topic plan's §3 (verbatim `paper-search` queries)
 runs them, and files hits into §4's **Search hits** block — always separate
 from **User-supplied** and **From bibliography**.
 
+## 5b. Index and export
+
+```bash
+# rebuild the lookup index (run after adding, moving, or deleting a paper note)
+python .claude/skills/ai-wiki/scripts/build-paper-index.py <AI_WIKI>/Research/papers
+
+# list topics with paper counts, figure counts, and bundle size
+python .claude/skills/ai-wiki/scripts/export-topic.py <AI_WIKI> --list
+
+# package one topic as a zip you can send or archive
+python .claude/skills/ai-wiki/scripts/export-topic.py <AI_WIKI> <topic-slug>
+```
+
+`Research/paper-index.md` is **generated** — a single table of every paper note's
+slug, full title, first author, year, arXiv ID, DOI, topic, and status. It exists
+so "have I already read this?" is one grep rather than a walk over every note, and
+so near-duplicates can be spotted by title. Never edit it by hand.
+
+An export bundle mirrors the vault's directory depths rather than flattening them,
+because image embeds are real relative paths; keeping `Research/…` and
+`_attachments/…` where they were means the pictures still render after extraction,
+in any markdown viewer. Only embedded figures ship by default.
+
 ## 6. paper-figures — command reference
 
 ```bash

@@ -53,6 +53,8 @@ Every judgement must land on specific evidence. "Works well" and "very innovativ
   - topic-slug: 2-3 hyphenated keywords for the research direction; no date (it is a living document).
   - e.g. `bioz-needle-sensing.md`, `us-guided-cvc.md`.
 
+These fields feed `Research/paper-index.md`, a generated lookup table (`scripts/build-paper-index.py`) holding every note's slug, title, first author, year, identifiers, topic, and status. Step 0 of `/ai-wiki` greps that one file instead of walking the note tree, and it is also where near-duplicate detection by title happens. **Never hand-edit the index; regenerate it.**
+
 **`arxiv:` and `doi:` are not optional decoration — they are the only reliable dedup key.** The slug in the filename is a judgement call ("the 2-3 most distinctive keywords"), so the same paper read twice can produce different slugs and a filename-based check will miss it. When the user next hands over the same paper, step 0 of `/ai-wiki` greps exactly these two fields. **Fill whichever the paper has; fill both when it has both.** Papers with neither (older conference papers) fall back to first author's last name + `year` + `title` — which is why those three fields cannot be omitted either.
 
 ### Linkage requirement

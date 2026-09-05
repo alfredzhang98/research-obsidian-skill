@@ -41,13 +41,22 @@ Routine filing (one obvious folder, no figures) needs none of them — the proce
 
 0. **Duplicate check — before downloading or reading anything.** When the input is a paper (arXiv link, DOI, PDF), first establish whether it has already been read. **This step comes first** because everything after it is expensive: fetching the PDF, reading the full text, extracting figures. On a duplicate, all of that is wasted work.
 
+   **Search the index at `Research/paper-index.md` first.** It is generated from every note's frontmatter and holds each slug, full title, first author, year, arXiv ID, DOI, topic, and status in one file — grepping one file scales, walking and opening a tree does not.
+
    Look it up by stable identifier, stopping at the first hit. **Do not guess the filename** — the slug is a judgement call ("the 2-3 most distinctive keywords"), so the same paper read twice can produce different slugs, and a filename search will miss it.
 
    | Order | How |
    |---|---|
-   | 1 | **arXiv ID**, version suffix stripped: `Grep "2101\.09207" Research/papers/` |
-   | 2 | **DOI**: `Grep "10\.1109/AIM65483" Research/papers/` |
-   | 3 | **Neither exists** (common for older conference papers): `Glob Research/papers/**/<lastname>-<year>-*.md`, then open it and confirm title and authors |
+   | 1 | **arXiv ID**, version suffix stripped: `Grep "2101\.09207" Research/paper-index.md` |
+   | 2 | **DOI**: `Grep "10\.1109/AIM65483" Research/paper-index.md` |
+   | 3 | **Neither exists** (common for older conference papers): scan the index by first-author surname + year, then confirm against the title |
+   | 4 | **Near-duplicates** (not the same paper but heavily overlapping: an earlier paper from the same group, a conference version of a journal paper): the index carries full titles, so scan by title keywords |
+
+   If the index is missing or visibly stale (the note count does not match), rebuild it before searching:
+
+   ```bash
+   python .claude/skills/ai-wiki/scripts/build-paper-index.py <AI_WIKI>/Research/papers
+   ```
 
    **On a hit, do not start rewriting.** Report these four things and stop for the user's decision:
 
@@ -90,11 +99,37 @@ Routine filing (one obvious folder, no figures) needs none of them — the proce
    - `Glob` `Research/topics/` and `Research/papers/` first, pick the nearest target, and state the relationship in a sentence rather than dropping a bare link.
    - **This command does not create topics.** If there is genuinely nothing to link to, flag in `.claude/rules/active.md` that this opens a new area and tell the user that `/ai-wiki-full` is the command that builds a hub.
    - When the note does fit an existing topic, add the forward link to that topic's S6 list — reciprocal links are what make the graph cluster.
-7. **Register** — if this opens a new direction or is in-flight work, add a one-line pointer to `.claude/rules/active.md` and bump its `updated:`. Do not mirror state there. `active.md` is the only rules file this workflow touches without an explicit request to change configuration.
+7. **Rebuild the index — mandatory after writing, moving, or deleting a paper note.** The index is the entry point for the next duplicate check; leaving it stale is equivalent to switching that check off.
+
+   ```bash
+   python .claude/skills/ai-wiki/scripts/build-paper-index.py <AI_WIKI>/Research/papers
+   ```
+
+   It also reports three integrity checks: **duplicate identifiers** (usually the same paper written twice), **notes with neither arXiv nor DOI** (findable only by title), and **notes not filed under any topic**. The index is generated — **never hand-edit it**.
+
+8. **Register** — if this opens a new direction or is in-flight work, add a one-line pointer to `.claude/rules/active.md` and bump its `updated:`. Do not mirror state there. `active.md` is the only rules file this workflow touches without an explicit request to change configuration.
+
+## Exporting a bundle
+
+When the user wants a whole direction packaged up — to send to a collaborator, read offline, or archive:
+
+```bash
+# list the topics with paper counts, figure counts, and size
+python .claude/skills/ai-wiki/scripts/export-topic.py <AI_WIKI> --list
+
+# export one: hub + every paper note under it + the figures those notes embed
+python .claude/skills/ai-wiki/scripts/export-topic.py <AI_WIKI> <topic-slug>
+
+python .claude/skills/ai-wiki/scripts/export-topic.py <AI_WIKI> --all               # one zip per topic
+python .claude/skills/ai-wiki/scripts/export-topic.py <AI_WIKI> <topic> --all-figures  # include unembedded crops
+```
+
+The zip **preserves the vault's directory depths** (`Research/…` and `_attachments/…`), so the `../../../_attachments/` paths inside notes resolve unchanged and the images render in any markdown viewer after extraction. Only **embedded** figures ship by default — figure extraction is deliberately over-inclusive, so whole folders inflate a bundle several-fold. The bundle README lists any `[[wikilink]]` pointing outside it.
 
 ## Self-check before finishing
 
-- [ ] **Step 0 duplicate check ran before any download or read** (arXiv ID → DOI → author+year), and on a hit the path was reported and the user decided
+- [ ] **Step 0 duplicate check ran before any download or read** (grep `Research/paper-index.md`: arXiv → DOI → author+year → title near-duplicates), and on a hit the path was reported and the user decided
+- [ ] **The index was rebuilt afterwards** with `build-paper-index.py`, and its integrity report was read
 - [ ] `arxiv:` / `doi:` filled in frontmatter whenever the paper has one — they are the only reliable dedup key
 - [ ] Every path written is inside the AI-managed folder
 - [ ] Filename matches the spec for its note type; a paper note sits at the `papers/` root (this command creates no topic)

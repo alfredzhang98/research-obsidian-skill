@@ -37,7 +37,7 @@ Treat plugin names as capabilities, not requirements. Check whether a preferred 
 
 ## New paper note (`/ai-wiki`, default)
 
-0. **Check for a duplicate before downloading** (`SKILL.md` step 0): `Grep` the arXiv ID → `Grep` the DOI → `Glob <lastname>-<year>-*.md`. On a hit, report the path, `status`, the quick card's Conclusion line, and the topic, then **stop and ask** whether the user wants to view it, extend it, or re-read it. **This runs before the paper tool** — otherwise a duplicate is fetched, read in full, and figure-extracted for nothing.
+0. **Check for a duplicate before downloading** (`SKILL.md` step 0): grep `Research/paper-index.md` — arXiv ID → DOI → first-author surname + year → title keywords for near-duplicates. On a hit, report the path, `status`, the quick card's Conclusion line, and the topic, then **stop and ask** whether the user wants to view it, extend it, or re-read it. **This runs before the paper tool** — otherwise a duplicate is fetched, read in full, and figure-extracted for nothing.
 1. Resolve `<AI_WIKI>` from vault configuration, defaulting to `0ai_wiki/`.
 2. Read the full paper with the preferred paper tool or the fallback above. Do not write a deep note from the abstract alone.
 3. Run `paper-figures` when figures or tables materially aid understanding. Save output under `<AI_WIKI>/_attachments/paper-figures/<paper-slug>/` and inspect its JSON manifest.
@@ -46,7 +46,8 @@ Treat plugin names as capabilities, not requirements. Check whether a preferred 
    - **Professional wording**: no metaphorical labels; see the wording table in `note-specs.md`.
 5. **At least one `[[wikilink]]` to an existing note** — `Glob` `Research/topics/*.md` and `Research/papers/**/*.md` first (papers have per-topic subfolders), link to the nearest, and state the relationship. **This command creates no topic.**
 6. If the note fits an existing topic, add the forward link to that topic's S6 list.
-7. If this opens active work, add one concise pointer to `.claude/rules/active.md`. This is the only dynamic rules file.
+7. Rebuild the lookup index: `python .claude/skills/ai-wiki/scripts/build-paper-index.py <AI_WIKI>/Research/papers`. Skipping this leaves the next duplicate check searching stale data.
+8. If this opens active work, add one concise pointer to `.claude/rules/active.md`. This is the only dynamic rules file.
 
 ## Place a note under a topic (`/ai-wiki-full`)
 

@@ -58,6 +58,8 @@ Paper notes live in per-topic folders: `Research/papers/<topic-slug>/<paper-slug
 - A new hub was created → create `Research/papers/<new-topic-slug>/` alongside it.
 - The note was written at the `papers/` root by `/ai-wiki` and is only now being filed → move it into the subfolder **and change its embed prefix from `../../_attachments/` to `../../../_attachments/`**.
 
+After moving a note, **rebuild the index** (`scripts/build-paper-index.py`) so the folder change is reflected in the topic column, and the next duplicate check searches current data.
+
 > **This is the one step in this workflow that fails silently.** `[[wikilinks]]` resolve by filename anywhere in the vault, so moving a note never breaks a link; markdown image embeds are real relative paths, and a wrong depth shows up only as an image that does not render. Spot-check one image after moving. The attachment tree `_attachments/paper-figures/<paper-slug>/` **stays flat and does not follow the topic** — papers change topics, slugs do not.
 
 ### 6.5 Reciprocal linking (mandatory)
@@ -85,7 +87,7 @@ Each time this command runs, check once and **propose** (do not execute):
 - **Upgrade candidates**: a lightweight hub that has reached five notes.
 - **Split candidates**: a hub past roughly 15 notes where one S2 sub-area alone would hold five — only then is splitting justified, and the split-out topic passes the admission test by construction.
 
-Merging, splitting, and upgrading **all require the user's agreement before execution**. When executing, **move the `Research/papers/<topic-slug>/` folder with the hub**: relocate notes from the absorbed folder into the surviving hub's folder and delete the empty directory. Folder-to-folder moves keep the same depth, so embed prefixes do not change.
+Merging, splitting, and upgrading **all require the user's agreement before execution**. Rebuild the index afterwards. When executing, **move the `Research/papers/<topic-slug>/` folder with the hub**: relocate notes from the absorbed folder into the surviving hub's folder and delete the empty directory. Folder-to-folder moves keep the same depth, so embed prefixes do not change.
 
 ---
 
