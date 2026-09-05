@@ -69,7 +69,27 @@ After moving a note, **rebuild the index** (`scripts/build-paper-index.py`) so t
 - Both directions, always — one missing side and the graph stops clustering.
 - A paper that genuinely spans two topics: pick the dominant one for the reciprocal link and mention the other with a plain `[[wikilink]]`. **Never file the same paper under two hubs.**
 
-### 6.6 Five notes is a recommendation threshold, not authorisation
+### 6.6 Cross-paper synthesis — mandatory when filing into an existing hub
+
+S4 and S6 only hang the paper on the hub; **the hub's value is in S5**. New connections almost never come from looking for them in the abstract — they come from **colliding the new paper with the structures S5 already holds**: the comparison table, the numbered regularity, the logged contradictions. So this step has fixed moves, not a vague "remember to synthesise".
+
+**Re-read S5's existing tables and numbered regularities first**, then land at least one of:
+
+| Which one | What to write |
+|---|---|
+| **Consensus** (n≥2 with existing notes) | State n, and how the two pieces of evidence differ — different abstraction level / lab / task family. Two results from the same source are not n=2 |
+| **Contradiction** | Lay out each side's evidence and name **the single cheapest experiment that would settle it** |
+| **Nth instance of a logged regularity** | Say whether it has the same shape as the previous N−1, or a different shape that is equally damaging |
+| **New row in an existing comparison table** | Fill every column; if the paper occupies a position that did not exist on the table, say which axis the gap was on |
+| **None of the above** | **Write "this paper produced no new cross-paper thread"** explicitly, then stop |
+
+**That last row is a hard requirement.** Inventing something that looks like synthesis is worse than honestly recording none — it contaminates the basis for the next round's judgement.
+
+Also refresh the **note count and sub-area distribution** in the S0 abstract block and the status column in the sub-area table. Stale counts make the hub misinform the next round's decisions (this is the second place in the workflow that fails silently).
+
+> **Reading order is a tool too.** An "ancestor" paper (the source that every later paper criticises) usually yields more when read **after** its critics than in chronological order — you can then check directly whether those critiques attack what it actually claimed or what everyone assumed it claimed. Likewise, two papers in the same niche that never cite each other yield more read side by side than either alone.
+
+### 6.7 Five notes is a recommendation threshold, not authorisation
 
 When a lightweight hub reaches five linked notes, **say it is mature enough for a full plan, then stop**. Reaching the threshold authorises nothing: no expansion, no `paper-search`, until the user agrees.
 
@@ -97,6 +117,8 @@ Merging, splitting, and upgrading **all require the user's agreement before exec
 - [ ] If a hub was created, all three admission tests were explicitly passed in the note or the conversation
 - [ ] No hub was created merely to house one paper (the 1:1 check)
 - [ ] Reciprocal links complete: paper note → topic, and topic S4 row + S6 list → paper note
+- [ ] **S5 cross-paper synthesis done**: a consensus (with n and how the two sources differ) / a contradiction (with the cheapest settling experiment) / an Nth instance / a new comparison-table row — **or an explicit "this paper produced no new cross-paper thread"**. Nothing invented to look like synthesis
+- [ ] **S0's note count and sub-area distribution, and the S2 status column, match the actual file count**
 - [ ] The paper is filed under exactly one hub
 - [ ] The note sits in `Research/papers/<topic-slug>/` and its embeds use `../../../_attachments/` (not `../../`), with one image spot-checked
 - [ ] A new hub's S3 reads "no systematic search run yet" (unless the user explicitly asked for a search)

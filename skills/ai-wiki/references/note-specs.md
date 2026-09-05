@@ -3,7 +3,7 @@ name: note-specs
 description: Filename, frontmatter, and section specs for paper notes, learning notes, and topic research plans
 metadata:
   type: spec
-updated: 2026-09-04
+updated: 2026-09-06
 ---
 
 # Note Specs
@@ -219,9 +219,23 @@ updated: YYYY-MM-DD
 | S2 Sub-areas | 2-4, coarse, allowed to be provisional | 3-6, each tagged, deliberate |
 | S3 Search strategy | **skip** — write "no systematic search run yet" | required, with verbatim queries |
 | S4 Reading queue | 3-5 **recommended next reads** from the paper's own bibliography, clearly marked as such. Do **not** run a search to build it | full triage output of an actual `paper-search` run |
-| S5 Synthesis | one honest line: what this single paper suggests, flagged as n=1 | consensus / contradictions / exploitable gap |
+| S5 Synthesis | **At hub creation**: one honest line, what this single paper suggests, flagged as n=1. **Every paper filed afterwards must land another entry** — see "S5 grows with the notes" below | consensus / contradictions / exploitable gap |
 
 **Do not over-build a lightweight companion.** Its job is to give the paper a home and an obvious next read, not to pre-empt a literature review the user has not asked for. When in doubt, less: an honest 40-line hub beats a 200-line speculative plan.
+
+### S5 grows with the notes — the hub's one irreplaceable output
+
+**"Lightweight" scopes S1-S4, not S5.** S4 and S6 only hang papers on the hub; any indexing script could do that. **S5 is the only place this workflow produces something new**, and it can only start having content from the second paper onward. So: at hub creation S5 is "one line + n=1", and **every paper filed afterwards must land another entry** — procedure in `ai-wiki-full/SKILL.md` step 6.6.
+
+One empirical rule about how to write it: **new connections almost never come from looking for them in the abstract — they come from colliding a new paper with structures S5 already holds.** So maintain S5 deliberately as collidable structure, not as prose:
+
+- **Comparison tables** — the routes within one sub-area, columns being "how it handles the shared difficulty / what it buys / what it costs". When a new paper arrives, ask first whether it is a new row or occupies a position that did not exist on the table.
+- **Numbered regularities** — recurring methodological problems (e.g. "changed two things, controlled one") recorded explicitly as "Nth instance", noting whether each instance has the same shape.
+- **Numbered contradictions** — when two papers reach opposite conclusions, log it immediately as "Contradiction (1)/(2)" with the cheapest experiment that would settle it, rather than leaving each half in its own paper note.
+
+A prose observation cannot be checked against a new paper three months later; a table and a numbered regularity can.
+
+**S5 is allowed to say "none".** Writing "this paper produced no new cross-paper thread" is a valid output; inventing something that looks like synthesis is not — it contaminates the basis for the next round's judgement.
 
 ### Promotion is user-triggered only
 
