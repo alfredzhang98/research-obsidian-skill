@@ -31,6 +31,14 @@ A note is a professional technical document, not an essay. **Do not use metaphor
 | "feeds into X" | Files under topic X |
 | "what I'd do differently" | Experiments I think should have been run |
 | "crushes", "destroys", "blows away" | Use the actual margin: higher by Y points on X |
+| "control arm", "another leg" | control method / control group -- clinical-trial wording makes an ML reader translate |
+| "the tallest bar" (about an ablation) | the ablation entry with the largest change |
+| "the prescription", "the disease" | the proposed fix / the problem -- a paper is not a case history |
+| "spectrum", "ecological niche" | full ordering / same problem setting |
+| "the line I am betting on" | the regularity with the strongest evidence so far |
+| "collide it against" | check it item by item against |
+| "the ancestor" (an early paper later papers criticise) | the earliest paper on this line; the N that follow all diagnose it |
+| Invented coded labels ("shape A" and the like) | **the label must explain itself**: write "A: no controlled variable", not "shape A". A reader should never have to look up what a label means |
 
 Every judgement must land on specific evidence. "Works well" and "very innovative" are failed writing; "`Transport` from pixels, 0% to 90% across three seeds" is not.
 
@@ -212,7 +220,7 @@ updated: YYYY-MM-DD
    | first-author year, short title | S2 tag | high/med/low | queued / skim / read | `[[author-year-slug]]` once written |
 
 5. **Synthesis and open questions** — **the hub's one irreplaceable output** (S0.5 and S4 could both be generated; this section could not). Three parts, each with a size rule:
-   - **5.1 Structures** — only **collidable structure**: comparison tables, numbered regularities (shapes A/B/C…), numbered contradictions. Prose observations do not belong here — nobody can check one against a new paper three months later, but a table they can.
+   - **5.1 Structures** — only **structure you can check item by item**: comparison tables, numbered regularities (labelled A/B/C…, each label spelling out the situation), numbered contradictions. Prose observations do not belong here — nobody can check one against a new paper three months later, but a table they can.
    - **5.2 Open questions (by sub-area)** — **<= 6 per sub-area**. When full, move answered ones to 5.3 rather than appending.
    - **5.3 Answered / superseded** — keeps the trail: **what was asked / who answered it / what the answer was / what gap remains**. Append-only; it stops the next round re-asking the same question.
 6. **Related hubs** — links to *other* topics with one line on how they complement each other. **No per-paper annotations** — that is S0.5's job, and it was already unscannable at 19 notes.
