@@ -152,6 +152,7 @@ Merging, splitting, and upgrading **all require the user's agreement before exec
 - [ ] **The note's frontmatter carries `subarea:` and `tagline:`**, and `--maps` was re-run to regenerate S0.5
 - [ ] **S0's note count and sub-area distribution, and the S2 status column, match the actual file count**
 - [ ] **`active.md` gained one line of <= 150 chars and the file is still <= 6 KB** (`wc -c .claude/rules/active.md`)
+- [ ] **New prose written into the hub passes the same three wording tests** — S5 is where metaphor creeps back in first
 - [ ] The paper is filed under exactly one hub
 - [ ] The note sits in `Research/papers/<topic-slug>/` and its embeds use `../../../_attachments/` (not `../../`), with one image spot-checked
 - [ ] A new hub's S3 reads "no systematic search run yet" (unless the user explicitly asked for a search)

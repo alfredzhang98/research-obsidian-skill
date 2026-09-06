@@ -140,6 +140,7 @@ The zip **preserves the vault's directory depths** (`Research/…` and `_attachm
 - [ ] **S0 plain-language summary filled**, without jargon dumping
 - [ ] Quick card written last; all six lines are concrete statements and it stands alone
 - [ ] No `{{placeholder}}` left in the delivered note
+- [ ] **Wording passes the three tests** (see "Wording requirements" in `references/note-specs.md`): no images borrowed from other fields (ancestor / prescription / bar / niche / beat / collapsed / ceiling / load-bearing / landed...), no colloquialisms (figure out / good enough / just / the real trap), invented labels explain themselves
 - [ ] **No metaphorical labels**
 - [ ] Figures embedded inline, not dumped at the end
 - [ ] **Paper note:** S2 names actual prior methods and their specific failure; S7 separates author-stated / mine / their future work; S8's conclusion cites evidence and each opportunity has all four lines

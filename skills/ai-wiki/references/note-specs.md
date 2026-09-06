@@ -20,7 +20,19 @@ Obsidian's Templates core plugin points at `Templates/`, so the user inserts the
 
 ### Wording requirements (mandatory)
 
-A note is a professional technical document, not an essay. **Do not use metaphorical or slogan-like labels.** Specifically:
+A note is a professional technical document, not an essay.
+
+**Three tests, applied to every sentence as you write it** (the table below lists instances, not the full set -- **do not assume a word is fine merely because it is absent from the table**):
+
+1. **Is this word literal, or an image borrowed from another field?** Borrowed images always get replaced. "The **ancestor** of this line", "the **prescription** for KL", "the tallest **bar** in the ablation", "two papers in the same **niche**" -- each forces the reader to translate the image back into a technical meaning, a step that buys nothing.
+2. **If the plain phrasing is used instead, does the sentence get vaguer?** If not, the image carried no information and was decoration. If it does, the point has not been worked out yet -- which calls for stating it precisely, not covering it with a metaphor.
+3. **Can a reader understand an invented label from the label alone?** If not, rewrite it. Write "A: no controlled variable", not "shape A"; write "comparison tables and logged questions", not "the structure zone".
+
+Colloquialisms fail the same way: "figure out" -> "determine", "good enough" -> "sufficient", "just drop the likelihood" -> "does not use the likelihood", "the real trap" -> "the real problem".
+
+**Keep genuine domain terms even when they sound figurative**: bleeding, blood vessel, drug design, convolution, dashed line, (endoscopic) haptic feel -- these are standard words in their own fields; do not over-correct them.
+
+Specifically:
 
 | Do not write | Write instead |
 |---|---|
@@ -39,6 +51,15 @@ A note is a professional technical document, not an essay. **Do not use metaphor
 | "collide it against" | check it item by item against |
 | "the ancestor" (an early paper later papers criticise) | the earliest paper on this line; the N that follow all diagnose it |
 | Invented coded labels ("shape A" and the like) | **the label must explain itself**: write "A: no controlled variable", not "shape A". A reader should never have to look up what a label means |
+| "beat", "lost to", "rival", "home turf" | exceeded / fell below / control method / each paper's own experimental setting |
+| "collapsed", "blew up", "fell apart", "fatal" | failed / diverged / no longer holds / largest effect |
+| "load-bearing", "ceiling", "barrier", "pillar" | decisive / upper limit / hard constraint / core evidence |
+| "waved away", "quietly skipped", "in passing", "pulled out" | covered in one sentence / skipped without comment / also / isolated |
+| "landed", "end of the road", "for nothing", "buried earlier" | deployed / no further headroom / needlessly / already stated |
+| "chopped", "eaten up", "held up", "hard wound" | dropped / offset / stayed stable / key defect |
+| "beautiful", "elegant", "the trick", "the usual playbook" | concise / the approach / the standard approach |
+
+> **Sweep before delivering.** These requirements were written retroactively on 2026-09-06: one vault had accumulated **278** such phrasings across 30 files, because no individual instance looked wrong on its own. They have to hold while writing, not through cleanup afterwards.
 
 Every judgement must land on specific evidence. "Works well" and "very innovative" are failed writing; "`Transport` from pixels, 0% to 90% across three seeds" is not.
 
