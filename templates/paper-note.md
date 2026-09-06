@@ -9,6 +9,8 @@ code: ""
 date_added: {{date}}
 tags: [research/]
 status: read
+subarea: ""          # sub-area letter in the owning hub ("C, D" if it spans two); blank if unfiled
+tagline: ""          # one-line placement, <=40 chars; feeds the hub's S0.5 paper map
 ---
 
 # {{title}}

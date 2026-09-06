@@ -84,8 +84,12 @@ code: ""            # optional
 date_added: YYYY-MM-DD
 tags: [research/bioimpedance, research/medical-ai]
 status: read         # or: skim / queued
+subarea: "C"         # sub-area letter in the owning hub; "C, D" when it spans two
+tagline: "one-line placement, <=40 chars"   # the row this note gets in the hub S0.5 map
 ---
 ```
+
+**`subarea:` and `tagline:` drive the hub's S0.5 paper map** (script-generated; see `ai-wiki-full/SKILL.md` step 6.5). A tagline says *where this paper sits on the line*, not a reworded title — e.g. "swap the family: Beta, whose support matches the action interval, so the boundary bias is identically zero", not "uses a Beta distribution as the policy". Change a placement here and re-run the script; **never hand-edit the table in the hub**.
 
 ### Sections (in order)
 
@@ -197,6 +201,7 @@ updated: YYYY-MM-DD
 ### Sections (in order)
 
 0. **Quick card** — `> [!abstract]` under the H1: central question / the line I am betting on (and why) / progress. Refresh on every update — it is the one line the user reads to decide whether to resume this direction.
+0.5. **Paper map** — **script-generated; never hand-written**. One line per paper: sub-area / `[[slug]]` / one-line placement / year / status, grouped by sub-area. Lives between `<!-- PAPER-MAP:START … -->` and `<!-- PAPER-MAP:END -->`, rewritten by `build-paper-index.py --maps`. **This is the single entry point for "what is in this topic"** — at 30-40 notes it is the only part still scannable.
 1. **Scope and central question** — one paragraph: the question this direction answers and its explicit boundaries (what is in, what is deliberately out). Sharp scope, clean clusters.
 2. **Sub-questions / sub-areas** — 3-6 of them. Each gets a `research/<area>` or `method/<x>` tag; these become the tag sub-clusters in the graph. **This is where fine distinctions go** — do not split them into separate topic files.
 3. **Search strategy** — concrete and executable: verbatim query strings for `paper-search`, seed sources / venues / authors, time window and inclusion criteria.
@@ -206,8 +211,11 @@ updated: YYYY-MM-DD
    |---|---|---|---|---|
    | first-author year, short title | S2 tag | high/med/low | queued / skim / read | `[[author-year-slug]]` once written |
 
-5. **Synthesis and open questions** — filled progressively: what the literature agrees on, contradictions, the gap you could exploit. Derive the next round of queries from the gaps here.
-6. **Linked notes** — `[[wikilink]]` list to every note in this direction (the MOC hub), grouped by S2 sub-area.
+5. **Synthesis and open questions** — **the hub's one irreplaceable output** (S0.5 and S4 could both be generated; this section could not). Three parts, each with a size rule:
+   - **5.1 Structures** — only **collidable structure**: comparison tables, numbered regularities (shapes A/B/C…), numbered contradictions. Prose observations do not belong here — nobody can check one against a new paper three months later, but a table they can.
+   - **5.2 Open questions (by sub-area)** — **<= 6 per sub-area**. When full, move answered ones to 5.3 rather than appending.
+   - **5.3 Answered / superseded** — keeps the trail: **what was asked / who answered it / what the answer was / what gap remains**. Append-only; it stops the next round re-asking the same question.
+6. **Related hubs** — links to *other* topics with one line on how they complement each other. **No per-paper annotations** — that is S0.5's job, and it was already unscannable at 19 notes.
 
 ### Two modes — pick by what triggered the note
 

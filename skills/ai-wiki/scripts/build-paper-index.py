@@ -31,7 +31,12 @@ import re
 import sys
 
 # Frontmatter keys pulled into the index. Order here is the column order.
-WANTED = ("title", "authors", "year", "venue", "arxiv", "doi", "status", "date_added")
+WANTED = ("title", "authors", "year", "venue", "arxiv", "doi", "status", "date_added", "subarea", "tagline")
+
+# The 论文地图 table is written between these markers inside each hub, so the
+# script can regenerate it in place without touching hand-written sections.
+MAP_START = "<!-- PAPER-MAP:START — 由 build-paper-index.py 生成，勿手改 -->"
+MAP_END = "<!-- PAPER-MAP:END -->"
 
 
 def parse_frontmatter(text: str) -> dict[str, str]:
@@ -70,10 +75,52 @@ def cell(value: str, dash: str = "—") -> str:
     return value.replace("|", "\\|") if value else dash
 
 
+def subarea_key(raw: str) -> tuple[str, str]:
+    """Sort key for a subarea cell. Primary letter first; '—'/blank sorts last."""
+    primary = (raw or "").split(",")[0].strip() or "~"
+    return ("~" if primary == "—" else primary, raw or "")
+
+
+def render_map(rows: list[dict]) -> list[str]:
+    """One scannable row per paper, grouped by sub-area. This is the hub's map."""
+    L = [
+        MAP_START,
+        "",
+        f"共 **{len(rows)} 篇**。`子方向` 与 `一句话定位` 来自各 note 的 `subarea:` / `tagline:` frontmatter —— "
+        "**改内容请改那里再重跑脚本**，不要直接改本表。",
+        "",
+        "| 子方向 | 论文 | 一句话定位 | 年份 | 状态 |",
+        "|---|---|---|---|---|",
+    ]
+    for r in sorted(rows, key=lambda r: (subarea_key(r.get("subarea", "")), r.get("year", ""), r["slug"])):
+        L.append(
+            f"| {cell(r.get('subarea',''))} | [[{r['slug']}]] | {cell(r.get('tagline',''))} "
+            f"| {cell(r.get('year',''))} | {cell(r.get('status',''))} |"
+        )
+    L += ["", MAP_END]
+    return L
+
+
+def write_map_into_hub(hub: pathlib.Path, rows: list[dict]) -> str:
+    """Replace the marked block in a hub file. Returns a short status string."""
+    if not hub.is_file():
+        return "hub not found"
+    text = hub.read_text(encoding="utf-8")
+    block = "\n".join(render_map(rows))
+    if MAP_START in text and MAP_END in text:
+        head, rest = text.split(MAP_START, 1)
+        _, tail = rest.split(MAP_END, 1)
+        hub.write_text(head + block + tail, encoding="utf-8")
+        return f"map updated ({len(rows)} rows)"
+    return "no PAPER-MAP markers — add them to the hub first"
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("papers_dir", type=pathlib.Path, help="the Research/papers directory")
     ap.add_argument("-o", "--out", type=pathlib.Path, default=None, help="output path (default: ../paper-index.md)")
+    ap.add_argument("--maps", action="store_true",
+                    help="also regenerate each hub's 论文地图 table (between the PAPER-MAP markers)")
     args = ap.parse_args()
 
     papers = args.papers_dir.resolve()
@@ -163,6 +210,16 @@ def main() -> int:
             ] + [f"- [[{s}]]" for s in unfiled] + [""]
 
     out_path.write_text("\n".join(L).rstrip() + "\n", encoding="utf-8")
+
+    # --- write each topic's 论文地图 back into its hub ----------------------
+    if args.maps:
+        topics_dir = papers.parent / "topics"
+        for topic in sorted({r["topic"] for r in rows if r["topic"]}):
+            hub = topics_dir / f"{topic}.md"
+            status = write_map_into_hub(hub, [r for r in rows if r["topic"] == topic])
+            print(f"  {topic}: {status}")
+            if "no PAPER-MAP markers" in status:
+                print(f"    hint: 在 hub 的 §0.5 里插入这两行\n      {MAP_START}\n      {MAP_END}", file=sys.stderr)
 
     print(f"indexed {len(rows)} notes -> {out_path}")
     for d in dupes:

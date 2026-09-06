@@ -65,9 +65,17 @@ After moving a note, **rebuild the index** (`scripts/build-paper-index.py`) so t
 ### 6.5 Reciprocal linking (mandatory)
 
 - The paper note links back to `[[<topic-slug>]]` (in "Related links", and named in S8's "files under topic").
-- The topic's **S4 queue row** (status + note link) and **S6 list** link forward, with S6 grouping it under the right S2 sub-area.
+- **The note's frontmatter must carry `subarea:` and `tagline:`** — the hub's S0.5 paper map is generated from them (below).
+- The topic's **S4 queue row** gets its status and note link.
 - Both directions, always — one missing side and the graph stops clustering.
 - A paper that genuinely spans two topics: pick the dominant one for the reciprocal link and mention the other with a plain `[[wikilink]]`. **Never file the same paper under two hubs.**
+
+> **S0.5's paper map is generated; never hand-write it.** Each note's `subarea:` (sub-area letter, `"C, D"` when it spans two) and `tagline:` (one-line placement, **<=40 chars**) drive it. To change a placement, edit the frontmatter and re-run:
+> ```bash
+> python .claude/skills/ai-wiki/scripts/build-paper-index.py 0ai_wiki/Research/papers -o 0ai_wiki/Research/paper-index.md --maps
+> ```
+> `--maps` rewrites what sits between `<!-- PAPER-MAP:START … -->` and `<!-- PAPER-MAP:END -->` in each hub; hand-written sections are untouched. A new hub needs those two markers inserted first.
+> **The old "S6 per-paper annotations" are abolished** — unscannable at 19 notes, useless at 30-40. S6 now holds **related hubs only**.
 
 ### 6.6 Cross-paper synthesis — mandatory when filing into an existing hub
 
@@ -85,9 +93,31 @@ S4 and S6 only hang the paper on the hub; **the hub's value is in S5**. New conn
 
 **That last row is a hard requirement.** Inventing something that looks like synthesis is worse than honestly recording none — it contaminates the basis for the next round's judgement.
 
+**Which part of S5 it lands in** (structure and size discipline below):
+
+| Content | Goes to |
+|---|---|
+| New row on a comparison table / new numbered regularity / new numbered contradiction | **S5.1 Structures** |
+| A question that is still open | **S5.2**, under its sub-area, **<= 6 per sub-area** |
+| An older question **this paper answered** | **Move it to S5.3**, recording what was asked / who answered / what the answer was / what gap remains. Do not leave it in place |
+
 Also refresh the **note count and sub-area distribution** in the S0 abstract block and the status column in the sub-area table. Stale counts make the hub misinform the next round's decisions (this is the second place in the workflow that fails silently).
 
 > **Reading order is a tool too.** An "ancestor" paper (the source that every later paper criticises) usually yields more when read **after** its critics than in chronological order — you can then check directly whether those critiques attack what it actually claimed or what everyone assumed it claimed. Likewise, two papers in the same niche that never cite each other yield more read side by side than either alone.
+
+### 6.6b Size discipline — it has to stay scannable at 30-40 notes
+
+A hub grows linearly with the paper count, and **a hub too long to scan is a hub that does nothing**. Hard rules:
+
+| Where | Rule | Why |
+|---|---|---|
+| **S0.5 paper map** | Script-generated, one line per paper | The single entry point for "what is in this topic". Hand-written means drift |
+| **S5.1 Structures** | Only **collidable structure**: comparison tables, numbered regularities, numbered contradictions. No prose observations | A prose observation cannot be checked against a new paper three months later; a table can |
+| **S5.2 Open questions** | **<= 6 per sub-area**; when full, move answered ones to S5.3 first | Otherwise it becomes a wish-list that only ever grows |
+| **S4 reading queue** | Read rows become `~~struck~~ + read, see [[slug]]`; **do not keep the full rationale** | The rationale is already in the note |
+| **`.claude/rules/active.md`** | **<= 1 line of <= 150 chars per paper, <= 6 KB total** | It is loaded in full every session. In one vault it reached **43 KB** (43% of it mirroring paper notes), burning ~11k tokens per turn |
+
+**The test is not line count — it is whether you can answer "what is in this topic and where is it stuck" in 30 seconds.** If you cannot, restructure instead of appending.
 
 ### 6.7 Five notes is a recommendation threshold, not authorisation
 
@@ -118,7 +148,10 @@ Merging, splitting, and upgrading **all require the user's agreement before exec
 - [ ] No hub was created merely to house one paper (the 1:1 check)
 - [ ] Reciprocal links complete: paper note → topic, and topic S4 row + S6 list → paper note
 - [ ] **S5 cross-paper synthesis done**: a consensus (with n and how the two sources differ) / a contradiction (with the cheapest settling experiment) / an Nth instance / a new comparison-table row — **or an explicit "this paper produced no new cross-paper thread"**. Nothing invented to look like synthesis
+- [ ] **Landed in the right part**: structure into S5.1, still-open into S5.2 (that sub-area under 6), answered ones **moved** to S5.3 rather than left in place
+- [ ] **The note's frontmatter carries `subarea:` and `tagline:`**, and `--maps` was re-run to regenerate S0.5
 - [ ] **S0's note count and sub-area distribution, and the S2 status column, match the actual file count**
+- [ ] **`active.md` gained one line of <= 150 chars and the file is still <= 6 KB** (`wc -c .claude/rules/active.md`)
 - [ ] The paper is filed under exactly one hub
 - [ ] The note sits in `Research/papers/<topic-slug>/` and its embeds use `../../../_attachments/` (not `../../`), with one image spot-checked
 - [ ] A new hub's S3 reads "no systematic search run yet" (unless the user explicitly asked for a search)
